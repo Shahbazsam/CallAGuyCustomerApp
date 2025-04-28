@@ -26,8 +26,7 @@ class RegisterViewModel @Inject constructor(
     private val registerUseCase : AuthUserUseCase
 ) : ViewModel() {
 
-    private var _state by mutableStateOf(RegistrationFormState())
-    val state = _state
+    var state by mutableStateOf(RegistrationFormState())
 
     private val _registrationEventChannel = Channel<ValidationEvent>()
     val registrationEventChannel = _registrationEventChannel.receiveAsFlow()
@@ -35,22 +34,22 @@ class RegisterViewModel @Inject constructor(
     fun onEvent(event : RegistrationFormEvent) {
         when(event) {
             is RegistrationFormEvent.AddressChanged -> {
-                _state = _state.copy(address = event.address)
+                state = state.copy(address = event.address)
             }
             is RegistrationFormEvent.EmailChanged -> {
-                _state = _state.copy(email = event.email)
+                state = state.copy(email = event.email)
             }
             is RegistrationFormEvent.PasswordChanged -> {
-                _state = _state.copy(password = event.password)
+                state = state.copy(password = event.password)
             }
             is RegistrationFormEvent.PhoneNumberChanged -> {
-                _state = _state.copy(phoneNumber = event.phoneNumber)
+                state = state.copy(phoneNumber = event.phoneNumber)
             }
             is RegistrationFormEvent.RepeatedPasswordChanged -> {
-                _state = _state.copy(repeatedPassword = event.repeatedPassword)
+                state = state.copy(repeatedPassword = event.repeatedPassword)
             }
             is RegistrationFormEvent.UserNameChanged -> {
-                _state = _state.copy(userName = event.userName)
+                state = state.copy(userName = event.userName)
             }
             RegistrationFormEvent.Submit -> {
                 submitData()
@@ -59,16 +58,16 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun submitData() {
-        val emailResult = validateEmail.execute(_state.email)
-        val passwordResult = validatePassword.execute(_state.password)
-        val repeatPasswordResult = validateRepeatedPassword.execute(_state.password , state.repeatedPassword)
+        val emailResult = validateEmail.execute(state.email)
+        val passwordResult = validatePassword.execute(state.password)
+        val repeatPasswordResult = validateRepeatedPassword.execute(state.password , state.repeatedPassword)
 
         val hasError = listOf(
             emailResult, passwordResult, repeatPasswordResult
         ).any { !it.successful }
 
         if (hasError) {
-            _state = _state.copy(
+            state = state.copy(
                 emailError = emailResult.errorMessage,
                 passwordError = passwordResult.errorMessage,
                 repeatedPasswordError = repeatPasswordResult.errorMessage

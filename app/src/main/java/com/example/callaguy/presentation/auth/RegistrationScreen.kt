@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -74,7 +73,6 @@ fun RegistrationScreen() {
             }
         }
     }
-
     Column(
         modifier = Modifier
             .background(Color(0xFFF5F5F5))
@@ -98,7 +96,7 @@ fun RegistrationScreen() {
             text = " Create Account ",
             style = MaterialTheme.typography.headlineMedium,
             fontSize = 28.sp,
-            color = Color(0xFF333333),
+            color = Color.DarkGray,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.height(12.dp))
@@ -199,11 +197,12 @@ fun RegistrationScreen() {
             }
         }
         Row(
+            Modifier.padding(bottom = 46.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Text(
                 modifier = Modifier
-                    .padding(top = 4.dp , start = 38.dp),
+                    .padding(top = 4.dp , start = 48.dp),
                 text = " Already have a account ? ",
                 style = MaterialTheme.typography.displayMedium,
                 fontSize = 18.sp,
@@ -244,7 +243,11 @@ fun MyTextField(
                 focusedContainerColor = Color(0xFFFFFFFF),
                 unfocusedContainerColor = Color(0xFFFFFFFF),
                 focusedBorderColor = Color(0xFFE0E0E0),
-                unfocusedBorderColor = Color(0xFFE0E0E0)
+                unfocusedBorderColor = Color(0xFFE0E0E0),
+                focusedTextColor = Color(0xFF858585),
+                unfocusedTextColor = Color(0xFF858585),
+                errorContainerColor = Color(0xFFFFFFFF),
+                errorTextColor = Color(0xFF858585)
             ) ,
             label = {Text(
                 text =  label,
@@ -259,22 +262,20 @@ fun MyTextField(
         if (stateError != null) {
             Text(
                 modifier = Modifier
-                    .padding(start =28.dp , top = 12.dp),
+                    .padding(start =28.dp , top = 8.dp),
                 text = stateError,
                 color = Color.Red,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }
-
     }
-
-
 }
 
+/*
 
 @Preview(showBackground = true)
 @Composable
 fun Preview () {
     RegistrationScreen()
-}
+}*/

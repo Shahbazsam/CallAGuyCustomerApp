@@ -5,6 +5,9 @@ import com.example.callaguy.data.remote.AuthApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
 import com.example.callaguy.domain.repository.AuthRepository
 import com.example.callaguy.domain.usecase.AuthUserUseCase
+import com.example.callaguy.domain.validation.ValidateEmail
+import com.example.callaguy.domain.validation.ValidatePassword
+import com.example.callaguy.domain.validation.ValidateRepeatedPassword
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,6 +56,22 @@ object AppModule {
     @Singleton
     fun provideAuthUseCase(authRepository: AuthRepository) : AuthUserUseCase {
         return AuthUserUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEmailValidationUseCase() : ValidateEmail {
+        return ValidateEmail()
+    }
+    @Provides
+    @Singleton
+    fun providePasswordValidationUseCase() : ValidatePassword {
+        return ValidatePassword()
+    }
+    @Provides
+    @Singleton
+    fun provideRepeatPasswordValidationUseCase() : ValidateRepeatedPassword {
+        return ValidateRepeatedPassword()
     }
 
 

@@ -4,7 +4,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.OkHttpClient.Builder
 
 object Constants {
-    const val BASE_URL = ""
+    const val BASE_URL = "https://example.com"
 
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
