@@ -2,6 +2,7 @@ package com.example.callaguy.domain.usecase
 
 import android.provider.ContactsContract.RawContacts.Data
 import com.example.callaguy.data.dto.Authentication.AuthenticationRequestDto
+import com.example.callaguy.data.dto.Authentication.LoginRequestDto
 import com.example.callaguy.data.dto.Authentication.RegisterResponseDto
 import com.example.callaguy.domain.repository.AuthRepository
 
@@ -20,4 +21,5 @@ class AuthUserUseCase(
             Result.failure(e)
         }
     }
+
 }
