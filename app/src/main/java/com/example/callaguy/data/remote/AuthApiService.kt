@@ -4,15 +4,14 @@ import com.example.callaguy.data.dto.Authentication.AuthenticationRequestDto
 import com.example.callaguy.data.dto.Authentication.LoginRequestDto
 import com.example.callaguy.data.dto.Authentication.LoginResponseDto
 import com.example.callaguy.data.dto.Authentication.RegisterResponseDto
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface AuthApiService {
 
     @POST("/customer_auth/register")
-    suspend fun register( @Body data : AuthenticationRequestDto) : Response<RegisterResponseDto>
+    suspend fun register( @Body data : AuthenticationRequestDto)
 
     @POST("/customer_auth/login")
-    suspend fun logIn(@Body data : LoginRequestDto) : Response<LoginResponseDto>
+    suspend fun logIn(@Body data : LoginRequestDto) : LoginResponseDto
 }

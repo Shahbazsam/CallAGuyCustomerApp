@@ -1,5 +1,9 @@
 package com.example.callaguy.core.di
 
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
+import com.example.callaguy.Application
 import com.example.callaguy.core.constants.Constants
 import com.example.callaguy.data.remote.AuthApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
@@ -11,6 +15,7 @@ import com.example.callaguy.domain.validation.ValidateRepeatedPassword
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -54,8 +59,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthUseCase(authRepository: AuthRepository) : AuthUserUseCase {
-        return AuthUserUseCase(authRepository)
+    fun provideAuthUseCase(authRepository: AuthRepository , prefs : SharedPreferences) : AuthUserUseCase {
+        return AuthUserUseCase(authRepository , prefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext app : Context) : SharedPreferences {
+        return app.getSharedPreferences("prefs" , MODE_PRIVATE )
     }
 
     @Provides

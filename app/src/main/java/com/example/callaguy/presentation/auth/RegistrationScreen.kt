@@ -3,6 +3,7 @@ package com.example.callaguy.presentation.auth
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,30 +44,38 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.callaguy.R
+import com.example.callaguy.domain.model.ResultClass
 
 
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(
+    onNavigateToLogin : () -> Unit
+) {
     val viewModel : RegisterViewModel = hiltViewModel()
     val state = viewModel.state
-    val registrationEvent by viewModel.registrationEventChannel.collectAsStateWithLifecycle(null)
 
     val context = LocalContext.current
     LaunchedEffect(key1 = context) {
         viewModel.registrationEventChannel.collect{event ->
             when(event) {
-                is RegisterViewModel.ValidationEvent.Error -> {
+                is ResultClass.Unauthorized -> {
                     Toast.makeText(
                         context,
-                        event.message,
+                        "Unauthorized",
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                RegisterViewModel.ValidationEvent.Loading -> Unit
-                is RegisterViewModel.ValidationEvent.Success -> {
+                is ResultClass.Authorized<*> -> {
                     Toast.makeText(
                         context,
-                        "${event.result.status} ${event.result.message}",
+                        "Registration Successful",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                is ResultClass.UnKnownError<*> -> {
+                    Toast.makeText(
+                        context,
+                        "Unknown error happened",
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -84,7 +93,7 @@ fun RegistrationScreen() {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                modifier = Modifier.size(120.dp),
+                modifier = Modifier.size(140.dp),
                 painter = painterResource(R.drawable.logo),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
@@ -182,7 +191,7 @@ fun RegistrationScreen() {
                             text = " Register ",
                             color = Color(0xFFFFFFFF)
                         )
-                        if (registrationEvent is RegisterViewModel.ValidationEvent.Success ) {
+                        if (state.isLoading) {
                             CircularProgressIndicator(
                                 color = Color(0xFFFFFFFF),
                                 strokeWidth = 2.dp,
@@ -211,6 +220,9 @@ fun RegistrationScreen() {
             )
             Text(
                 modifier = Modifier
+                    .clickable {
+                        onNavigateToLogin()
+                    }
                     .padding(top = 4.dp , start = 2.dp),
                 text = "Log In ",
                 style = MaterialTheme.typography.displayMedium,

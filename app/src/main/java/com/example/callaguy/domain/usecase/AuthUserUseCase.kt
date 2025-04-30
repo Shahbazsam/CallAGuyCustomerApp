@@ -1,25 +1,36 @@
 package com.example.callaguy.domain.usecase
 
-import android.provider.ContactsContract.RawContacts.Data
+import android.content.SharedPreferences
 import com.example.callaguy.data.dto.Authentication.AuthenticationRequestDto
 import com.example.callaguy.data.dto.Authentication.LoginRequestDto
-import com.example.callaguy.data.dto.Authentication.RegisterResponseDto
+import com.example.callaguy.domain.model.ResultClass
 import com.example.callaguy.domain.repository.AuthRepository
+import retrofit2.HttpException
+import androidx.core.content.edit
 
 class AuthUserUseCase(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val preference : SharedPreferences
 ) {
-    suspend fun register(data : AuthenticationRequestDto ) : Result<RegisterResponseDto> {
-        return try {
-            val response = authRepository.register(data)
-            if (response.isSuccessful){
-                Result.success(response.body() ?: RegisterResponseDto(status = "OK" , message = "registration Successful"))
-            } else {
-                Result.failure(Exception("Registration Failed"))
-            }
-        } catch (e : Exception) {
-            Result.failure(e)
-        }
+    suspend fun register(data : AuthenticationRequestDto ) : ResultClass<Unit> {
+        return  authRepository.register(data)
     }
 
+    suspend fun login(data : LoginRequestDto) :ResultClass<Unit> {
+        return try {
+            val response = authRepository.login(data)
+
+            // Save token to SharedPreferences
+            preference.edit() { putString("jwt", response.token) }
+
+            ResultClass.Authorized()
+        } catch (e: HttpException) {
+            when (e.code()) {
+                401 -> ResultClass.Unauthorized()
+                else -> ResultClass.UnKnownError()
+            }
+        } catch (e: Exception) {
+            ResultClass.UnKnownError()
+        }
+    }
 }

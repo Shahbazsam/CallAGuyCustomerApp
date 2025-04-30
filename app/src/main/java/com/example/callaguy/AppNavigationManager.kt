@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.callaguy.presentation.auth.RegistrationScreen
+import com.example.callaguy.presentation.login.LoginScreen
 import com.example.callaguy.presentation.splashScreen.SplashScreen
 import kotlinx.serialization.Serializable
 
@@ -18,11 +19,23 @@ fun AppNavigationManager(modifier: Modifier = Modifier) {
     ) {
         composable<SplashScreenRoute> {
             SplashScreen {
-                navController.navigate(RegisterScreenRoute)
+                navController.navigate(LoginScreenRoute)
             }
         }
+        composable<LoginScreenRoute> {
+            LoginScreen(
+                onNavigateToRegister = {
+                    navController.navigate(RegisterScreenRoute)
+                },
+                onNavigateToHome = {
+
+                }
+            )
+        }
         composable<RegisterScreenRoute> {
-            RegistrationScreen()
+            RegistrationScreen() {
+                navController.navigate(LoginScreenRoute)
+            }
         }
     }
 }
@@ -33,3 +46,6 @@ object SplashScreenRoute
 
 @Serializable
 object RegisterScreenRoute
+
+@Serializable
+object LoginScreenRoute

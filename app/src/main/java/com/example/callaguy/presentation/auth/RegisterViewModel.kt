@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.callaguy.data.dto.Authentication.AuthenticationRequestDto
-import com.example.callaguy.data.dto.Authentication.RegisterResponseDto
+import com.example.callaguy.domain.model.ResultClass
 import com.example.callaguy.domain.usecase.AuthUserUseCase
 import com.example.callaguy.domain.validation.ValidateEmail
 import com.example.callaguy.domain.validation.ValidatePassword
@@ -28,7 +28,7 @@ class RegisterViewModel @Inject constructor(
 
     var state by mutableStateOf(RegistrationFormState())
 
-    private val _registrationEventChannel = Channel<ValidationEvent>()
+    private val _registrationEventChannel = Channel<ResultClass<Unit>>()
     val registrationEventChannel = _registrationEventChannel.receiveAsFlow()
 
     fun onEvent(event : RegistrationFormEvent) {
@@ -74,10 +74,9 @@ class RegisterViewModel @Inject constructor(
             )
             return
         }
-
         if (!hasError) {
             viewModelScope.launch {
-                _registrationEventChannel.send(ValidationEvent.Loading)
+                state = state.copy(isLoading = true)
                 val data = AuthenticationRequestDto(
                     userName = state.userName,
                     email = state.email,
@@ -86,20 +85,9 @@ class RegisterViewModel @Inject constructor(
                     address = state.address,
                 )
                 val result = registerUseCase.register(data)
-                result.onSuccess {
-                    _registrationEventChannel.send(ValidationEvent.Success(it))
-                }.onFailure { error ->
-                    _registrationEventChannel.send(ValidationEvent.Error(message = error.message ?: "UnknownError"))
-                }
-
+                _registrationEventChannel.send(result)
+                state = state.copy(isLoading = false)
             }
         }
     }
-
-    sealed class ValidationEvent {
-        object Loading : ValidationEvent()
-        data class Success(val result : RegisterResponseDto) : ValidationEvent()
-        data class Error(val message : String) : ValidationEvent()
-    }
-
 }
