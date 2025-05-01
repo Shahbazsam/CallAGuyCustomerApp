@@ -44,6 +44,7 @@ fun LoginScreen (
     onNavigateToHome : () -> Unit,
     onNavigateToRegister : () -> Unit
     ) {
+
     val viewModel : LoginViewModel = hiltViewModel()
     val state = viewModel.state
 
