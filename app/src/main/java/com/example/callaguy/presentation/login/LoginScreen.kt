@@ -184,11 +184,12 @@ fun LoginScreen (
             Spacer(Modifier.height(50.dp))
             Row(
                 modifier =Modifier
+                    .align(Alignment.CenterHorizontally)
                     .padding(bottom = 60.dp)
             ){
                 Text(
                     modifier = Modifier
-                        .padding(top = 4.dp , start = 48.dp),
+                        .padding(top = 4.dp ),
                     text = " Don't have a account ? ",
                     style = MaterialTheme.typography.displayMedium,
                     fontSize = 18.sp,
@@ -198,7 +199,7 @@ fun LoginScreen (
                 Text(
                     modifier = Modifier
                         .clickable { onNavigateToRegister() }
-                        .padding(top = 4.dp , start = 2.dp),
+                        .padding(top = 4.dp ),
                     text = " Register ",
                     style = MaterialTheme.typography.displayMedium,
                     fontSize = 18.sp,

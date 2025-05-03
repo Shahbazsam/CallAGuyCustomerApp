@@ -19,10 +19,7 @@ class AuthUserUseCase(
     suspend fun login(data : LoginRequestDto) :ResultClass<Unit> {
         return try {
             val response = authRepository.login(data)
-
-            // Save token to SharedPreferences
             preference.edit() { putString("jwt", response.token) }
-
             ResultClass.Authorized()
         } catch (e: HttpException) {
             when (e.code()) {

@@ -3,9 +3,11 @@ package com.example.callaguy.core.di
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import com.example.callaguy.Application
 import com.example.callaguy.core.constants.Constants
-import com.example.callaguy.data.remote.AuthApiService
+import com.example.callaguy.data.auth.AuthInterceptor
+import com.example.callaguy.data.auth.SharedPrefTokenProvider
+import com.example.callaguy.data.auth.TokenProvider
+import com.example.callaguy.data.remote.ApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
 import com.example.callaguy.domain.repository.AuthRepository
 import com.example.callaguy.domain.usecase.AuthUserUseCase
@@ -20,6 +22,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
@@ -31,8 +34,26 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient() : OkHttpClient {
-        return Constants.client
+    fun provideTokenProvider(sharedPreferences: SharedPreferences) : TokenProvider {
+        return SharedPrefTokenProvider(sharedPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(tokenProvider: TokenProvider) : AuthInterceptor {
+        return AuthInterceptor(tokenProvider)
+    }
+
+    @Provides
+    @Singleton
+    fun providesOkHttpClient(authInterceptor: AuthInterceptor) : OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .build()
     }
 
     @Provides
@@ -47,13 +68,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun ProvideAuthApiService(retrofit: Retrofit) : AuthApiService {
-        return retrofit.create(AuthApiService::class.java)
+    fun ProvideAuthApiService(retrofit: Retrofit) : ApiService {
+        return retrofit.create(ApiService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideAuthRepository(authApiService: AuthApiService) : AuthRepository {
+    fun provideAuthRepository(authApiService: ApiService) : AuthRepository {
         return AuthRepositoryImpl(authApiService)
     }
 
