@@ -9,8 +9,11 @@ import com.example.callaguy.data.auth.SharedPrefTokenProvider
 import com.example.callaguy.data.auth.TokenProvider
 import com.example.callaguy.data.remote.ApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
+import com.example.callaguy.data.repository.ServiceRepositoryImpl
 import com.example.callaguy.domain.repository.AuthRepository
+import com.example.callaguy.domain.repository.ServiceRepository
 import com.example.callaguy.domain.usecase.AuthUserUseCase
+import com.example.callaguy.domain.usecase.ServiceUseCases
 import com.example.callaguy.domain.validation.ValidateEmail
 import com.example.callaguy.domain.validation.ValidatePassword
 import com.example.callaguy.domain.validation.ValidateRepeatedPassword
@@ -74,6 +77,18 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideServiceRepository(apiService: ApiService) : ServiceRepository {
+        return ServiceRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideServiceUseCase(serviceRepository: ServiceRepository) : ServiceUseCases {
+        return ServiceUseCases(serviceRepository)
+    }
+
+    @Provides
+    @Singleton
     fun provideAuthRepository(authApiService: ApiService) : AuthRepository {
         return AuthRepositoryImpl(authApiService)
     }
@@ -95,16 +110,16 @@ object AppModule {
     fun provideEmailValidationUseCase() : ValidateEmail {
         return ValidateEmail()
     }
+
     @Provides
     @Singleton
     fun providePasswordValidationUseCase() : ValidatePassword {
         return ValidatePassword()
     }
+
     @Provides
     @Singleton
     fun provideRepeatPasswordValidationUseCase() : ValidateRepeatedPassword {
         return ValidateRepeatedPassword()
     }
-
-
 }

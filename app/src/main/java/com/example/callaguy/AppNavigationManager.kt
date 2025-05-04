@@ -1,17 +1,27 @@
 package com.example.callaguy
 
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.callaguy.presentation.Service.ServiceScreen
 import com.example.callaguy.presentation.auth.RegistrationScreen
 import com.example.callaguy.presentation.login.LoginScreen
 import com.example.callaguy.presentation.splashScreen.SplashScreen
+import dagger.hilt.android.EntryPointAccessors
 import kotlinx.serialization.Serializable
 
 @Composable
-fun AppNavigationManager(modifier: Modifier = Modifier) {
+fun AppNavigationManager(modifier: Modifier = Modifier ) {
+
+    val context = LocalContext.current
+    val preferences = EntryPointAccessors
+        .fromApplication(context, PreferencesEntryPoint::class.java)
+        .getPreferences()
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -19,7 +29,18 @@ fun AppNavigationManager(modifier: Modifier = Modifier) {
     ) {
         composable<SplashScreenRoute> {
             SplashScreen {
-                navController.navigate(LoginScreenRoute)
+                val token = preferences.getString("jwt" , null)
+                if ( token != null) {
+                    navController.navigate(ServiceScreenRoute){
+                        popUpTo(SplashScreenRoute) { inclusive = true}
+                    }
+                } else {
+                    navController.navigate(LoginScreenRoute) {
+                        popUpTo(SplashScreenRoute) {
+                            inclusive = true
+                        }
+                    }
+                }
             }
         }
         composable<LoginScreenRoute> {
@@ -28,7 +49,7 @@ fun AppNavigationManager(modifier: Modifier = Modifier) {
                     navController.navigate(RegisterScreenRoute)
                 },
                 onNavigateToHome = {
-
+                    navController.navigate(ServiceScreenRoute)
                 }
             )
         }
@@ -36,6 +57,13 @@ fun AppNavigationManager(modifier: Modifier = Modifier) {
             RegistrationScreen() {
                 navController.navigate(LoginScreenRoute)
             }
+        }
+        composable<ServiceScreenRoute> {
+            ServiceScreen(
+                onCardClick = {},
+                onHomeClick = {navController.navigate(ServiceScreenRoute)},
+                onProfileClick = {}
+            )
         }
     }
 }
@@ -49,3 +77,6 @@ object RegisterScreenRoute
 
 @Serializable
 object LoginScreenRoute
+
+@Serializable
+object ServiceScreenRoute

@@ -2,14 +2,12 @@ package com.example.callaguy.presentation.Service
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,38 +15,75 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.callaguy.R
+import com.example.callaguy.data.dto.service.response.ServiceResponseDto
 import com.example.callaguy.presentation.BottomNavigationBar
+import com.example.callaguy.presentation.loadingScreens.ErrorScreen
+import com.example.callaguy.presentation.loadingScreens.ServicesLoadingScreen
 
 @Composable
-fun ServiceScreen(modifier: Modifier = Modifier) {
+fun ServiceScreen(
+    onHomeClick : () -> Unit,
+    onProfileClick : () -> Unit,
+    onCardClick: (Int) -> Unit
+) {
+    val viewmodel : ServiceViewModel = hiltViewModel()
+    val state by viewmodel.uiState.collectAsStateWithLifecycle()
 
+    when(state) {
+        is ServiceUiState.Error -> {
+            ErrorScreen (
+                onRetry = viewmodel::fetchServices
+            )
+        }
+        ServiceUiState.Idle -> Unit
+        ServiceUiState.Loading -> {
+            ServicesLoadingScreen()
+        }
+        is ServiceUiState.success -> {
+            Services(
+                services = (state as ServiceUiState.success).services,
+                onProfileClick = onProfileClick,
+                onHomeClick = onHomeClick,
+                onCardClick = onCardClick
+            )
+        }
+    }
 }
 
-
 @Composable
-fun Services(modifier: Modifier = Modifier) {
+fun Services(
+    services : List<ServiceResponseDto>,
+    onCardClick: (Int) -> Unit,
+    onHomeClick : () -> Unit,
+    onProfileClick : () -> Unit
+) {
     Scaffold(
         containerColor = Color(0xFFF5F5F5),
         bottomBar = {
             BottomNavigationBar(
-                onHomeClick = {},
-                onProfileClick = {}
+                onHomeClick = {onHomeClick()},
+                onProfileClick = { onProfileClick() }
             )
         }
     ) { padding ->
@@ -58,12 +93,11 @@ fun Services(modifier: Modifier = Modifier) {
                 .background(Color(0xFFF5F5F5))
                 .fillMaxSize()
         ) {
-            // Logo Box
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter)
-                    .offset(y = (-30).dp), // This moves it visually up without pushing content down
+                    .offset(y = (-30).dp), 
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -73,16 +107,15 @@ fun Services(modifier: Modifier = Modifier) {
                     contentScale = ContentScale.Crop
                 )
             }
-
-            // List of services
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 70.dp) // Adjust this to leave space for the logo
+                    .padding(top = 70.dp)
             ) {
-                items(fakeData) {
+                items(services) {
                     ServicesCard(
-                        data = it,
+                        onCardClick = onCardClick,
+                        service = it,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                     )
                 }
@@ -93,9 +126,14 @@ fun Services(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun ServicesCard(data: Data, modifier: Modifier = Modifier) {
+fun ServicesCard( onCardClick: (Int) -> Unit , service: ServiceResponseDto, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .clickable {
+                onCardClick(
+                    service.id
+                )
+            },
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFFFFFF)
         )
@@ -106,11 +144,16 @@ fun ServicesCard(data: Data, modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Image(
-                    modifier = Modifier
-                        .weight(1f),
-                    painter = painterResource(data.imageUrl),
-                    contentDescription = null
+                AsyncImage(
+                    model = ImageRequest.Builder(context = LocalContext.current)
+                        .data(service.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.weight(1f),
+                   /* error = painterResource(R.drawable.),
+                    placeholder = painterResource(R.drawable.),*/
                 )
                 Column(
                     modifier = Modifier
@@ -118,14 +161,14 @@ fun ServicesCard(data: Data, modifier: Modifier = Modifier) {
                         .padding(start = 12.dp)
                 ) {
                     Text(
-                        text = data.name,
+                        text = service.name,
                         style = MaterialTheme.typography.headlineMedium,
                         fontSize = 20.sp,
                         color = Color.DarkGray,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = data.description,
+                        text = service.description,
                         maxLines = 2,
                         style = MaterialTheme.typography.headlineMedium,
                         fontSize = 14.sp,
@@ -134,8 +177,6 @@ fun ServicesCard(data: Data, modifier: Modifier = Modifier) {
                     )
                 }
             }
-
-
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -145,6 +186,11 @@ fun ServicesCard(data: Data, modifier: Modifier = Modifier) {
                         shape = RoundedCornerShape(30)
                     )
                     .padding(horizontal = 16.dp, vertical = 6.dp)
+                    .clickable {
+                        onCardClick(
+                            service.id
+                        )
+                    }
             ) {
                 Text(
                     text = "Explore",
@@ -157,85 +203,3 @@ fun ServicesCard(data: Data, modifier: Modifier = Modifier) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun ServicePreview() {
-    Services()
-}
-@Preview(showBackground = true)
-@Composable
-fun ServiceCardPreview() {
-    ServicesCard(fakeData[1])
-}
-
-data class Data(
-    val id : Int ,
-    val name : String,
-    val description : String,
-    val imageUrl : Int,
-
-    )
-
-val fakeData = listOf(
-    Data(
-        id = 1,
-        name = "Cleaning",
-        description = "Professional home and office cleaning services.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 2,
-        name = "Plumbing",
-        description = "Leak repair, installation, and plumbing maintenance.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 3,
-        name = "Electrical",
-        description = "Fix wiring issues, install appliances and more.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 4,
-        name = "Pest Control",
-        description = "Safe and effective pest removal services.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 5,
-        name = "Painting",
-        description = "Interior and exterior painting for your home or office.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 6,
-        name = "AC Services",
-        description = "AC installation, repair, and maintenance.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 7,
-        name = "Carpentry",
-        description = "Furniture repair, custom woodwork, and more.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 8,
-        name = "Gardening",
-        description = "Lawn care, landscaping, and garden maintenance.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 9,
-        name = "Home Appliance Repair",
-        description = "Fix refrigerators, washing machines, and more.",
-        imageUrl = R.drawable.logo
-    ),
-    Data(
-        id = 10,
-        name = "Sanitization",
-        description = "Home and office deep sanitization services.",
-        imageUrl = R.drawable.logo
-    )
-)

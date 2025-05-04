@@ -1,5 +1,6 @@
 package com.example.callaguy
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.callaguy.ui.theme.CallAGuyTheme
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.components.SingletonComponent
 
 
 @AndroidEntryPoint
@@ -26,5 +30,14 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+
+
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface PreferencesEntryPoint {
+    fun getPreferences(): SharedPreferences
 }
 
