@@ -3,10 +3,14 @@ package com.example.callaguy.core.di
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import androidx.room.Database
+import androidx.room.Room
 import com.example.callaguy.core.constants.Constants
 import com.example.callaguy.data.auth.AuthInterceptor
 import com.example.callaguy.data.auth.SharedPrefTokenProvider
 import com.example.callaguy.data.auth.TokenProvider
+import com.example.callaguy.data.local.ProfileDao
+import com.example.callaguy.data.local.ProfileDatabase
 import com.example.callaguy.data.remote.ApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
 import com.example.callaguy.data.repository.ServiceRepositoryImpl
@@ -73,6 +77,22 @@ object AppModule {
     @Singleton
     fun ProvideAuthApiService(retrofit: Retrofit) : ApiService {
         return retrofit.create(ApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context) : ProfileDatabase {
+        return Room.databaseBuilder(
+            context ,
+            ProfileDatabase::class.java ,
+            "profile_database"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileDao(database: ProfileDatabase) : ProfileDao {
+        return database.dao()
     }
 
     @Provides
