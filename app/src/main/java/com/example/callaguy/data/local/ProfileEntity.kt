@@ -10,8 +10,8 @@ data class ProfileEntity(
     val id : Int = 1 ,
     val userName : String ,
     val email : String,
-    val address : String ,
-    val phone : String ,
+    val address : String? ,
+    val phone : String? ,
     val profilePicture : String?,
     val isSynced : Boolean
 )
