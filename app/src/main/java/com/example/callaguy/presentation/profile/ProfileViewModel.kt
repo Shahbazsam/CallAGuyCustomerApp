@@ -4,11 +4,9 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.callaguy.data.dto.profile.ProfileInfoResponseDto
-import com.example.callaguy.data.dto.service.response.ServiceResponseDto
 import com.example.callaguy.data.local.ProfileEntity
 import com.example.callaguy.domain.model.ResultClass
 import com.example.callaguy.domain.usecase.ProfileUseCase
-import com.example.callaguy.presentation.Service.ServiceUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,6 +30,8 @@ class ProfileViewModel @Inject constructor(
 
     private val _profilePictureState = MutableStateFlow<UpdateProfileImage>(UpdateProfileImage.Idle)
     val profilePictureState = _profilePictureState.asStateFlow()
+
+
 
     fun getProfileInfo() {
         viewModelScope.launch {
@@ -59,6 +59,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+
     fun updateProfilePhoto (image : Uri) {
         viewModelScope.launch {
             _profilePictureState.value = UpdateProfileImage.Loading
@@ -69,13 +70,13 @@ class ProfileViewModel @Inject constructor(
                             _profilePictureState.value = UpdateProfileImage.Success
                         }catch (e : Exception) {
                             _profilePictureState.value = UpdateProfileImage.Error(
-                                message = e.message ?: "Profile Update Failed"
+                                message =  " Local Profile Update Failed "
                             )
                         }
                     }
                     is ResultClass.UnKnownError<*> -> {
                         _profilePictureState.value = UpdateProfileImage.Error(
-                            message = "Profile Update Failed"
+                            message = "Profile Update Failed on Server"
                         )
                     }
                     is ResultClass.Unauthorized<*> ->{

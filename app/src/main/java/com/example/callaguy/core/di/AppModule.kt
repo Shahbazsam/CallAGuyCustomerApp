@@ -13,10 +13,13 @@ import com.example.callaguy.data.local.ProfileDao
 import com.example.callaguy.data.local.ProfileDatabase
 import com.example.callaguy.data.remote.ApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
+import com.example.callaguy.data.repository.ProfileRepositoryImpl
 import com.example.callaguy.data.repository.ServiceRepositoryImpl
 import com.example.callaguy.domain.repository.AuthRepository
+import com.example.callaguy.domain.repository.ProfileRepository
 import com.example.callaguy.domain.repository.ServiceRepository
 import com.example.callaguy.domain.usecase.AuthUserUseCase
+import com.example.callaguy.domain.usecase.ProfileUseCase
 import com.example.callaguy.domain.usecase.ServiceUseCases
 import com.example.callaguy.domain.validation.ValidateEmail
 import com.example.callaguy.domain.validation.ValidatePassword
@@ -93,6 +96,17 @@ object AppModule {
     @Singleton
     fun provideProfileDao(database: ProfileDatabase) : ProfileDao {
         return database.dao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileRepository(apiService: ApiService , dao : ProfileDao) : ProfileRepository {
+        return ProfileRepositoryImpl( dao , apiService)
+    }
+    @Provides
+    @Singleton
+    fun provideProfileUseCase(profileRepository: ProfileRepository) : ProfileUseCase {
+        return ProfileUseCase(profileRepository)
     }
 
     @Provides

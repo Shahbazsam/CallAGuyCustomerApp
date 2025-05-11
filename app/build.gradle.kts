@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
-    id("org.jetbrains.kotlin.plugin.serialization")
+    id("org.jetbrains.kotlin.plugin.serialization") version ("2.0.0")
 }
 
 android {
@@ -78,8 +78,8 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
 
     //Room
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.7.1")
+    kapt("androidx.room:room-compiler:2.7.1")
+    implementation("androidx.room:room-runtime:2.7.1")
 
 }
