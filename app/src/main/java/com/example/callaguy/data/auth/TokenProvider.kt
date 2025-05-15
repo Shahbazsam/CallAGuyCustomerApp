@@ -1,8 +1,7 @@
 package com.example.callaguy.data.auth
 
-import android.content.Context
 import android.content.SharedPreferences
-import dagger.hilt.android.qualifiers.ApplicationContext
+import androidx.core.content.edit
 import javax.inject.Inject
 
 interface TokenProvider {

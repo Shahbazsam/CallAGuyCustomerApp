@@ -1,7 +1,9 @@
 package com.example.callaguy.presentation.profile
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,14 +19,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,10 +49,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.example.callaguy.R
 import com.example.callaguy.data.local.ProfileEntity
 import com.example.callaguy.presentation.BottomNavBar
 import com.example.callaguy.presentation.loadingScreens.ErrorScreen
+import com.example.callaguy.presentation.loadingScreens.ProfileLoadingScreen
 
 
 @Composable
@@ -57,11 +70,6 @@ fun ProfileScreenRoot(
     val profileNetworkState by viewModel.profileNetworkState.collectAsStateWithLifecycle()
     val profilePictureState by viewModel.profilePictureState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(profileUIState) {
-        if (profileUIState == null) {
-            viewModel.getProfileInfo()
-        }
-    }
     when(profileNetworkState) {
         is ProfileNetworkState.Error -> {
             ErrorScreen {
@@ -75,8 +83,10 @@ fun ProfileScreenRoot(
             ).show()
         }
         ProfileNetworkState.Idle -> Unit
-        ProfileNetworkState.Loading -> TODO() // loading Screen i will add here
-        is ProfileNetworkState.success -> Unit
+        ProfileNetworkState.Loading -> {
+            ProfileLoadingScreen()
+        }
+        is ProfileNetworkState.Success -> Unit
     }
     profileUIState?.let { profile ->
         ProfileScreen(
@@ -84,7 +94,10 @@ fun ProfileScreenRoot(
             profilePictureState ,
             onHomeClick ,
             onProfileClick ,
-            onLogOut
+            onLogOut,
+            onProfileImageSelected = { uri ->
+                viewModel.updateProfilePhoto(uri)
+            }
         )
     }
 }
@@ -97,11 +110,17 @@ fun ProfileScreen(
     profilePictureState: UpdateProfileImage,
     onHomeClick: () -> Unit,
     onProfileClick: () -> Unit,
-    onLogOut: () -> Unit
+    onLogOut: () -> Unit,
+    onProfileImageSelected : (Uri) -> Unit
 ) {
+
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> /* handle image */ }
+        onResult = { uri ->
+            uri?.let {
+                onProfileImageSelected(it)
+            }
+        }
     )
     val context = LocalContext.current
     when(profilePictureState) {
@@ -142,15 +161,27 @@ fun ProfileScreen(
                     .fillMaxWidth(0.5f)
                     .aspectRatio(1f)
             ) {
-                Image(
-                    painter = painterResource(R.drawable.logo), // Replace with real image if available
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .border(2.dp, Color(0xFF777777), CircleShape),
-                    contentScale = ContentScale.Crop
-                )
+                if (profile.profilePicture != null) {
+                    AsyncImage(
+                        model = profile.profilePicture,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                            .border(2.dp, Color(0xFF4A90E2), CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }else {
+                    Image(
+                        painter = painterResource(R.drawable.logo), // Replace with real image if available
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                            .border(2.dp, Color(0xFF4A90E2), CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
                 if (profilePictureState == UpdateProfileImage.Loading) {
                     CircularProgressIndicator(
                         color = Color.Gray,
@@ -159,8 +190,27 @@ fun ProfileScreen(
                             .align(Alignment.Center)
                             .size(80.dp)
                     )
-
-
+                }
+                TextButton(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .padding(end = 5.dp, bottom = 5.dp)
+                        .size(50.dp)
+                        .align(Alignment.BottomEnd),
+                    onClick = {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = Color(0xFF4A90E2)
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
                 }
             }
         }
@@ -208,9 +258,9 @@ fun ProfileScreen(
 
 
 @Composable
-fun ProfileFieldCard(label: String, value: String) {
+fun ProfileFieldCard(label: String, value: String , modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = MaterialTheme.shapes.medium,
@@ -219,6 +269,7 @@ fun ProfileFieldCard(label: String, value: String) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
+                modifier = modifier,
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.Gray,
@@ -227,6 +278,7 @@ fun ProfileFieldCard(label: String, value: String) {
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
+                modifier = modifier,
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color(0xFF333333)
@@ -253,6 +305,7 @@ fun PreviewProfile(modifier: Modifier = Modifier) {
         onProfileClick = {},
         onLogOut = {},
         onHomeClick = {},
-        profilePictureState = UpdateProfileImage.Idle
+        profilePictureState = UpdateProfileImage.Idle ,
+        onProfileImageSelected = {}
     )
 }

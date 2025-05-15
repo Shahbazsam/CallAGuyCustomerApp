@@ -1,22 +1,21 @@
 package com.example.callaguy
 
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.edit
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.callaguy.presentation.Service.ServiceScreen
 import com.example.callaguy.presentation.auth.RegistrationScreen
 import com.example.callaguy.presentation.login.LoginScreen
+import com.example.callaguy.presentation.profile.ProfileScreenRoot
 import com.example.callaguy.presentation.splashScreen.SplashScreen
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.serialization.Serializable
 
 @Composable
-fun AppNavigationManager(modifier: Modifier = Modifier ) {
+fun AppNavigationManager() {
 
     val context = LocalContext.current
     val preferences = EntryPointAccessors
@@ -49,20 +48,44 @@ fun AppNavigationManager(modifier: Modifier = Modifier ) {
                     navController.navigate(RegisterScreenRoute)
                 },
                 onNavigateToHome = {
-                    navController.navigate(ServiceScreenRoute)
+                    navController.navigate(ServiceScreenRoute) {
+                        popUpTo(LoginScreenRoute) { inclusive = true}
+                    }
                 }
             )
         }
         composable<RegisterScreenRoute> {
-            RegistrationScreen() {
-                navController.navigate(LoginScreenRoute)
-            }
+            RegistrationScreen(
+                onNavigateToLogin = {
+                    navController.navigate(LoginScreenRoute)
+                }
+            )
         }
         composable<ServiceScreenRoute> {
             ServiceScreen(
                 onCardClick = {},
-                onHomeClick = {navController.navigate(ServiceScreenRoute)},
-                onProfileClick = {}
+                onHomeClick = { navController.navigate(ServiceScreenRoute) },
+                onProfileClick = { navController.navigate(ProfileScreenRoute) }
+            )
+        }
+        composable<ProfileScreenRoute> {
+            ProfileScreenRoot(
+                onLogOut = {
+                    preferences.edit { remove("jwt") }
+                    navController.navigate(LoginScreenRoute){
+                        popUpTo(ServiceScreenRoute){ inclusive = true }
+                    }
+                },
+                onHomeClick = {
+                    navController.navigate(ServiceScreenRoute)  {
+                        launchSingleTop = true
+                    }
+                },
+                onProfileClick = {
+                    navController.navigate(ProfileScreenRoute)  {
+                        launchSingleTop = true
+                    }
+                }
             )
         }
     }
@@ -80,3 +103,6 @@ object LoginScreenRoute
 
 @Serializable
 object ServiceScreenRoute
+
+@Serializable
+object ProfileScreenRoute
