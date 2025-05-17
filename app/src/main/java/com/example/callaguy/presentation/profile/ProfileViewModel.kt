@@ -34,6 +34,8 @@ class ProfileViewModel @Inject constructor(
     private val _profilePictureState = MutableStateFlow<UpdateProfileImage>(UpdateProfileImage.Idle)
     val profilePictureState = _profilePictureState.asStateFlow()
 
+
+
     init {
         viewModelScope.launch {
             val localData = useCase.getProfileFromDatabase().first()
