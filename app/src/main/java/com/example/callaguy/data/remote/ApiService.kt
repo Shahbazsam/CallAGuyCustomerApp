@@ -5,12 +5,14 @@ import com.example.callaguy.data.dto.Authentication.LoginRequestDto
 import com.example.callaguy.data.dto.Authentication.LoginResponseDto
 import com.example.callaguy.data.dto.profile.ProfileInfoResponseDto
 import com.example.callaguy.data.dto.service.response.ServiceResponseDto
+import com.example.callaguy.data.dto.subServices.SubServiceResponseDto
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ApiService {
 
@@ -31,4 +33,10 @@ interface ApiService {
 
     @GET("/customer_profile/profile_info")
     suspend fun getProfileInfo() : ProfileInfoResponseDto
+
+    @GET("/services/{id}")
+    suspend fun getSubServicesByServiceId(
+        @Path("id") id : Int
+    ) : List<SubServiceResponseDto>
+
 }

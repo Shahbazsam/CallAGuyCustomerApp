@@ -29,7 +29,8 @@ class ProfileViewModel @Inject constructor(
 
     private val _profileNetworkState =
         MutableStateFlow<ProfileNetworkState>(ProfileNetworkState.Idle)
-    val profileNetworkState = _profileNetworkState.asStateFlow()
+    val profileNetworkState = _profileNetworkState
+        .asStateFlow()
 
     private val _profilePictureState = MutableStateFlow<UpdateProfileImage>(UpdateProfileImage.Idle)
     val profilePictureState = _profilePictureState.asStateFlow()
@@ -82,7 +83,7 @@ class ProfileViewModel @Inject constructor(
     fun updateProfilePhoto(image: Uri) {
         viewModelScope.launch {
             _profilePictureState.value = UpdateProfileImage.Loading
-            when (val result = useCase.updateProfilePicture(image)) {
+            when ( useCase.updateProfilePicture(image)) {
                 is ResultClass.Authorized<*> -> {
                     try {
                         useCase.updatePictureAndSync(image.toString(), isSynced = true)
@@ -111,16 +112,16 @@ class ProfileViewModel @Inject constructor(
 }
 
 sealed interface UpdateProfileImage {
-    object Idle : UpdateProfileImage
-    object Loading : UpdateProfileImage
-    object Success : UpdateProfileImage
+    data object Idle : UpdateProfileImage
+    data object Loading : UpdateProfileImage
+    data object Success : UpdateProfileImage
     data class Error(val message: String) : UpdateProfileImage
 }
 
 
 sealed interface ProfileNetworkState {
-    object Idle : ProfileNetworkState
-    object Loading : ProfileNetworkState
-    object Success : ProfileNetworkState
+    data object Idle : ProfileNetworkState
+    data object Loading : ProfileNetworkState
+    data object Success : ProfileNetworkState
     data class Error(val code: String, val message: String) : ProfileNetworkState
 }
