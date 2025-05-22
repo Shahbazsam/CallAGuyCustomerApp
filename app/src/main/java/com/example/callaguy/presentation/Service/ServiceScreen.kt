@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -53,7 +54,7 @@ import com.example.callaguy.presentation.loadingScreens.ServicesLoadingScreen
 fun ServiceScreen(
     onHomeClick : () -> Unit,
     onProfileClick : () -> Unit,
-    onCardClick: (Int) -> Unit
+    onCardClick: (Int , String ) -> Unit
 ) {
     val viewmodel : ServiceViewModel = hiltViewModel()
     val state by viewmodel.uiState.collectAsStateWithLifecycle()
@@ -82,7 +83,7 @@ fun ServiceScreen(
 @Composable
 fun Services(
     services : List<ServiceResponseDto>,
-    onCardClick: (Int) -> Unit,
+    onCardClick: (Int , String) -> Unit,
     onHomeClick : () -> Unit,
     onProfileClick : () -> Unit
 ) {
@@ -99,11 +100,12 @@ fun Services(
                 .offset(y = (-35).dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Image(
-                modifier = Modifier.size(140.dp),
-                painter = painterResource(R.drawable.logo),
+            Icon(
+                modifier = Modifier
+                    .size(80.dp),
+                painter = painterResource(R.drawable.logoo),
                 contentDescription = null,
-                contentScale = ContentScale.Crop
+                tint = Color(0xFF777777)
             )
         }
         LazyColumn(
@@ -153,12 +155,13 @@ fun Services(
 
 
 @Composable
-fun ServicesCard( onCardClick: (Int) -> Unit , service: ServiceResponseDto, modifier: Modifier = Modifier) {
+fun ServicesCard( onCardClick: (Int , String ) -> Unit , service: ServiceResponseDto, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .clickable {
                 onCardClick(
-                    service.id
+                    service.id,
+                    service.name
                 )
             },
         shape = RoundedCornerShape(16.dp),
@@ -219,7 +222,8 @@ fun ServicesCard( onCardClick: (Int) -> Unit , service: ServiceResponseDto, modi
                     .align(Alignment.BottomEnd),
                 onClick = {
                     onCardClick(
-                        service.id
+                        service.id,
+                        service.name
                     )
                 },
                 shape = RoundedCornerShape(12.dp),
@@ -233,7 +237,7 @@ fun ServicesCard( onCardClick: (Int) -> Unit , service: ServiceResponseDto, modi
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp
                 )
-                Icon(Icons.Default.ArrowForward, contentDescription = null)
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
             }
         }
     }

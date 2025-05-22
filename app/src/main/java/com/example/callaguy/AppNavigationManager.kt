@@ -6,11 +6,13 @@ import androidx.core.content.edit
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.callaguy.presentation.Service.ServiceScreen
 import com.example.callaguy.presentation.auth.RegistrationScreen
 import com.example.callaguy.presentation.login.LoginScreen
 import com.example.callaguy.presentation.profile.ProfileScreenRoot
 import com.example.callaguy.presentation.splashScreen.SplashScreen
+import com.example.callaguy.presentation.subService.SubServiceScreenRoot
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.serialization.Serializable
 
@@ -63,7 +65,11 @@ fun AppNavigationManager() {
         }
         composable<ServiceScreenRoute> {
             ServiceScreen(
-                onCardClick = {},
+                onCardClick = { id , name ->
+                    navController.navigate(
+                        SubServiceScreenRoute(id , name)
+                    )
+                },
                 onHomeClick = { navController.navigate(ServiceScreenRoute) },
                 onProfileClick = { navController.navigate(ProfileScreenRoute) }
             )
@@ -88,6 +94,13 @@ fun AppNavigationManager() {
                 }
             )
         }
+        composable<SubServiceScreenRoute> {
+            val args = it.toRoute<SubServiceScreenRoute>()
+            SubServiceScreenRoot(
+                serviceId = args.serviceId,
+                serviceName = args.serviceName
+            )
+        }
     }
 }
 
@@ -106,3 +119,9 @@ object ServiceScreenRoute
 
 @Serializable
 object ProfileScreenRoute
+
+@Serializable
+data class SubServiceScreenRoute(
+    val serviceId : Int,
+    val serviceName : String
+)

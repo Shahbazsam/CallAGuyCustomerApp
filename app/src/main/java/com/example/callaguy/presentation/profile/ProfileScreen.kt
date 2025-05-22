@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,11 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -149,11 +146,13 @@ fun ProfileScreen(
                 .weight(1.3f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                modifier = Modifier.size(100.dp),
-                painter = painterResource(R.drawable.logo),
-                contentDescription = "App Logo",
-                contentScale = ContentScale.Crop,
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(80.dp),
+                painter = painterResource(R.drawable.logoo),
+                contentDescription = null,
+                tint = Color(0xFF777777)
             )
             Box(
                 contentAlignment = Alignment.Center,
@@ -217,10 +216,9 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Main content that fills remaining space
         Column(
             modifier = Modifier
-                .weight(1.9f)
+                .weight(1.7f)
                 .padding(horizontal = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -235,7 +233,9 @@ fun ProfileScreen(
         }
         Column(
             modifier = Modifier
-                .weight(0.6f),
+                .fillMaxWidth()
+                .weight(0.8f),
+            verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -243,7 +243,7 @@ fun ProfileScreen(
                 color = Color(0xFF4A90E2),
                 fontSize = 18.sp,
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(  bottom = 4.dp )
                     .clickable { onLogOut() }
             )
 
@@ -252,6 +252,7 @@ fun ProfileScreen(
                 onProfileClick = onProfileClick,
                 onHomeClick = onHomeClick
             )
+            Spacer(Modifier.height(12.dp))
         }
     }
 }
