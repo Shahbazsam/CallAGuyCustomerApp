@@ -5,6 +5,8 @@ import com.example.callaguy.data.dto.Authentication.LoginRequestDto
 import com.example.callaguy.data.dto.Authentication.LoginResponseDto
 import com.example.callaguy.data.dto.profile.ProfileInfoResponseDto
 import com.example.callaguy.data.dto.service.response.ServiceResponseDto
+import com.example.callaguy.data.dto.serviceRequest.CreateServiceRequest
+import com.example.callaguy.data.dto.serviceRequest.ServiceRequestResponse
 import com.example.callaguy.data.dto.subServices.SubServiceResponseDto
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -39,4 +41,6 @@ interface ApiService {
         @Path("id") id : Int
     ) : List<SubServiceResponseDto>
 
+    @POST("/customer_service_request/create")
+    suspend fun createServiceRequest( @Body data : CreateServiceRequest ) : ServiceRequestResponse
 }
