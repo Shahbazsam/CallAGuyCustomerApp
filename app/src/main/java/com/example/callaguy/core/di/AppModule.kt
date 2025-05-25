@@ -15,18 +15,22 @@ import com.example.callaguy.data.remote.ApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
 import com.example.callaguy.data.repository.ProfileRepositoryImpl
 import com.example.callaguy.data.repository.ServiceRepositoryImpl
+import com.example.callaguy.data.repository.ServiceRequestRepositoryImpl
 import com.example.callaguy.data.repository.SubServiceRepositoryImpl
 import com.example.callaguy.domain.repository.AuthRepository
 import com.example.callaguy.domain.repository.ProfileRepository
 import com.example.callaguy.domain.repository.ServiceRepository
+import com.example.callaguy.domain.repository.ServiceRequestRepository
 import com.example.callaguy.domain.repository.SubServiceRepository
 import com.example.callaguy.domain.usecase.AuthUserUseCase
 import com.example.callaguy.domain.usecase.ProfileUseCase
+import com.example.callaguy.domain.usecase.ServiceRequestUseCase
 import com.example.callaguy.domain.usecase.ServiceUseCases
 import com.example.callaguy.domain.usecase.SubServiceUseCase
 import com.example.callaguy.domain.validation.ValidateEmail
 import com.example.callaguy.domain.validation.ValidatePassword
 import com.example.callaguy.domain.validation.ValidateRepeatedPassword
+import com.example.callaguy.domain.validation.ValidateServiceRequestForm
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -99,6 +103,22 @@ object AppModule {
     @Singleton
     fun provideProfileDao(database: ProfileDatabase) : ProfileDao {
         return database.dao()
+    }
+
+    @Provides
+    fun provideServiceRequestFormValidation() : ValidateServiceRequestForm {
+        return ValidateServiceRequestForm()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSubServiceRequestRepository(apiService: ApiService) : ServiceRequestRepository {
+        return ServiceRequestRepositoryImpl(apiService)
+    }
+    @Provides
+    @Singleton
+    fun provideSubServiceRequestUseCase(serviceRequestRepository: ServiceRequestRepository) : ServiceRequestUseCase {
+        return ServiceRequestUseCase(serviceRequestRepository)
     }
 
     @Provides

@@ -1,5 +1,6 @@
 package com.example.callaguy.data.repository
 
+import android.util.Log
 import com.example.callaguy.data.dto.serviceRequest.CreateServiceRequest
 import com.example.callaguy.data.remote.ApiService
 import com.example.callaguy.domain.model.ServiceRequestModel
@@ -20,6 +21,7 @@ class ServiceRequestRepositoryImpl(
                 specialInstructions = data.specialInstructions
             )
         )
+        Log.d("check1" , "$response , $data")
         return ServiceRequestResponseModel(
             message = response.message
         )

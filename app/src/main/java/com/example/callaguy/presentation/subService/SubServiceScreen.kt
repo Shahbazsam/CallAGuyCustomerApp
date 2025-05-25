@@ -3,6 +3,7 @@ package com.example.callaguy.presentation.subService
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,6 +50,7 @@ import java.math.BigDecimal
 
 @Composable
 fun SubServiceScreenRoot(
+    onCardClick: (Int , String ) -> Unit,
     serviceId : Int,
     serviceName : String ,
     modifier: Modifier = Modifier
@@ -78,6 +80,7 @@ fun SubServiceScreenRoot(
         }
         is SubServiceUiState.Success -> {
             SubServiceScreen(
+                onCardClick = onCardClick,
                 service = serviceName,
                 subServices = (state as SubServiceUiState.Success).subServices
             )
@@ -89,6 +92,7 @@ fun SubServiceScreenRoot(
 
 @Composable
 fun SubServiceScreen(
+    onCardClick: (Int , String ) -> Unit,
     service: String,
     subServices: List<SubServiceResponseDto>,
     modifier: Modifier = Modifier
@@ -118,7 +122,7 @@ fun SubServiceScreen(
         Spacer(Modifier.weight(1f))
         LazyColumn {
             items(subServices) { subService ->
-                SubServiceCards(subService)
+                SubServiceCards(onCardClick ,  subService)
             }
             item {
                Spacer(Modifier.height(12.dp))
@@ -129,7 +133,7 @@ fun SubServiceScreen(
 
 
 @Composable
-fun SubServiceCards(subService: SubServiceResponseDto, modifier: Modifier = Modifier) {
+fun SubServiceCards(onCardClick: (Int , String) -> Unit,subService: SubServiceResponseDto, modifier: Modifier = Modifier) {
     Card(
         modifier = Modifier
             .padding(6.dp),
@@ -201,7 +205,12 @@ fun SubServiceCards(subService: SubServiceResponseDto, modifier: Modifier = Modi
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.End),
-                onClick = {},
+                onClick = {
+                    onCardClick(
+                        subService.id,
+                        subService.name,
+                    )
+                },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = Color(0x112196F3)
@@ -243,7 +252,7 @@ fun PriceTag(tag: String, price: String, modifier: Modifier = Modifier) {
 }
 
 
-@Preview
+/*@Preview
 @Composable
 fun Preview() {
     SubServiceScreen(
@@ -286,5 +295,5 @@ fun Preview() {
             )
         )
     )
-}
+}*/
 

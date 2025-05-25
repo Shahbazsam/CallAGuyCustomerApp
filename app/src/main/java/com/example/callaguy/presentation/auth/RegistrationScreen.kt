@@ -236,6 +236,7 @@ fun RegistrationScreen(
 
 @Composable
 fun MyTextField(
+    modifier: Modifier = Modifier,
     stateError : String ? ,
     value : String ,
     onValueChange : (String) -> Unit ,
@@ -244,7 +245,7 @@ fun MyTextField(
 ) {
     Column {
         OutlinedTextField(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp , end = 12.dp , top = 12.dp),
             shape = shapes.large,

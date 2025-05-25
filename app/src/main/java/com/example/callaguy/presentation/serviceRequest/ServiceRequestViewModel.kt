@@ -1,5 +1,6 @@
 package com.example.callaguy.presentation.serviceRequest
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,18 +28,13 @@ class ServiceRequestViewModel @Inject constructor(
     var requestFormState by mutableStateOf(ServiceRequestFormState())
 
     private val _uiState = MutableStateFlow<ServiceRequestUiState>(ServiceRequestUiState.Idle)
-    val usiState = _uiState.asStateFlow()
+    val uiState = _uiState.asStateFlow()
 
     fun onEvent(event : ServiceRequestFormEvent) {
         when(event) {
             is ServiceRequestFormEvent.AddressChanged -> {
                 requestFormState = requestFormState.copy(
                     address = event.address
-                )
-            }
-            is ServiceRequestFormEvent.DateChanged -> {
-                requestFormState = requestFormState.copy(
-                    preferredDate = event.preferredDate
                 )
             }
             is ServiceRequestFormEvent.InstructionChanged -> {
@@ -52,16 +48,12 @@ class ServiceRequestViewModel @Inject constructor(
                 )
                 createServiceRequest()
             }
-            is ServiceRequestFormEvent.TimeChange -> {
-                requestFormState = requestFormState.copy(
-                    preferredTime = event.preferredTime
-                )
-            }
         }
     }
 
     private fun createServiceRequest() {
         val check = validateServiceRequestForm.validate(requestFormState)
+        Log.d("checkInfo" , "$check , ${requestFormState.subServiceId}, ${requestFormState.address}, ${requestFormState.preferredDate},${requestFormState.preferredTime}, ${requestFormState.specialInstructions}")
         if (!check){
             return
         }
@@ -72,14 +64,15 @@ class ServiceRequestViewModel @Inject constructor(
             address = requestFormState.address,
             specialInstructions = requestFormState.specialInstructions
         )
+        Log.d("check1","$data")
         viewModelScope.launch {
             _uiState.value = ServiceRequestUiState.Loading
+            Log.d("check1" , "${_uiState.value}")
             delay(3000)
             when(val response = serviceRequestUseCase.createServiceRequest(data)){
                 is ResultClass.Authorized<*> -> {
-                    _uiState.value = ServiceRequestUiState.Success(
-                        message = response.data?.message ?: " Successfully Requested "
-                    )
+                    _uiState.value = ServiceRequestUiState.Success
+                    Log.d("check1" , "${_uiState.value}")
                 }
                 is ResultClass.UnKnownError<*> -> {
                     _uiState.value = ServiceRequestUiState.Error(
@@ -87,12 +80,14 @@ class ServiceRequestViewModel @Inject constructor(
                         message = "Something went wrong , please try again"
 
                     )
+                    Log.d("check1" , "${_uiState.value}")
                 }
                 is ResultClass.Unauthorized<*> -> {
                     _uiState.value = ServiceRequestUiState.Error(
                         code = "401",
                         message = "Unauthorized"
                     )
+                    Log.d("check1" , "${_uiState.value}")
                 }
             }
         }
@@ -104,6 +99,6 @@ class ServiceRequestViewModel @Inject constructor(
 sealed interface ServiceRequestUiState{
     data object Idle : ServiceRequestUiState
     data object Loading : ServiceRequestUiState
-    data class Success(val message : String ) : ServiceRequestUiState
+    data object Success : ServiceRequestUiState
     data class Error(val code : String , val message : String) : ServiceRequestUiState
 }

@@ -1,5 +1,6 @@
 package com.example.callaguy
 
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
@@ -11,6 +12,7 @@ import com.example.callaguy.presentation.Service.ServiceScreen
 import com.example.callaguy.presentation.auth.RegistrationScreen
 import com.example.callaguy.presentation.login.LoginScreen
 import com.example.callaguy.presentation.profile.ProfileScreenRoot
+import com.example.callaguy.presentation.serviceRequest.ServiceRequestScreen
 import com.example.callaguy.presentation.splashScreen.SplashScreen
 import com.example.callaguy.presentation.subService.SubServiceScreenRoot
 import dagger.hilt.android.EntryPointAccessors
@@ -97,8 +99,23 @@ fun AppNavigationManager() {
         composable<SubServiceScreenRoute> {
             val args = it.toRoute<SubServiceScreenRoute>()
             SubServiceScreenRoot(
+                onCardClick = { id , name  ->
+                    navController.navigate(ServiceRequestRoute(
+                        subServiceId = id ,
+                        subServiceName = name
+                    ))
+                },
                 serviceId = args.serviceId,
                 serviceName = args.serviceName
+            )
+        }
+        composable<ServiceRequestRoute> {
+            val args = it.toRoute<ServiceRequestRoute>()
+            ServiceRequestScreen(
+                onGoToOrders = {},
+                subServiceId = args.subServiceId ,
+                subServiceName = args.subServiceName,
+                subServiceImage = R.drawable.cleaning,
             )
         }
     }
@@ -124,4 +141,11 @@ object ProfileScreenRoute
 data class SubServiceScreenRoute(
     val serviceId : Int,
     val serviceName : String
+)
+
+@Serializable
+data class ServiceRequestRoute(
+    val subServiceId : Int ,
+    val subServiceName : String,
+    //val subServiceImage : String
 )
