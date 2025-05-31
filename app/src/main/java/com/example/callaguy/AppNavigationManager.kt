@@ -1,6 +1,5 @@
 package com.example.callaguy
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit

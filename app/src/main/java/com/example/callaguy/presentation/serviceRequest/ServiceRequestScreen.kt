@@ -92,7 +92,91 @@ fun ServiceRequestScreen(
                 }
             )
         }
-        ServiceRequestUiState.Idle -> Unit
+        ServiceRequestUiState.Idle -> {
+            Column(
+                modifier = Modifier
+                    .background(Color(0xFFF5F5F5))
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+                    text = "Book a service",
+                    fontSize = 22.sp,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0D141C),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                ServiceInfo(subServiceName, subServiceImage)
+                Spacer(Modifier.height(12.dp))
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    item {
+                        DateTimePickerSection(
+                            date = selectedDate,
+                            time = selectedTime,
+                            onDateChange = { selectedDate = it },
+                            onTimeChange = { selectedTime = it }
+                        )
+                    }
+
+                    item {
+                        MyTextField(
+                            modifier = Modifier
+                                .size(width = 358.dp, height = 104.dp),
+                            stateError = null,
+                            value = formState.address,
+                            onValueChange = {
+                                viewmodel.onEvent(ServiceRequestFormEvent.AddressChanged(it))
+                            },
+                            label = "Address",
+                        )
+
+                        MyTextField(
+                            modifier = Modifier
+                                .size(width = 358.dp, height = 144.dp),
+                            stateError = null,
+                            value = formState.specialInstructions,
+                            onValueChange = {
+                                viewmodel.onEvent(ServiceRequestFormEvent.InstructionChanged(it))
+                            },
+                            label = "Special Instruction",
+                        )
+                        Log.d("Date ", "$selectedDate")
+                        Log.d("time ", "$selectedTime")
+                    }
+
+
+                    item {
+                        Spacer(Modifier.height(200.dp))
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
+                                .size(width = 55.dp, height = 55.dp),
+                            onClick = {
+                                formState.preferredDate = selectedDate
+                                formState.preferredTime = selectedTime
+                                viewmodel.onEvent(ServiceRequestFormEvent.Submit(subServiceId))
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(Color(0xFF4A90E2))
+                        ) {
+                            Text(
+                                text = " Confirm & Pay ",
+                                color = Color(0xFFFFFFFF)
+                            )
+                        }
+                        Spacer(Modifier.height(20.dp))
+                    }
+                }
+            }
+        }
         ServiceRequestUiState.Loading -> {
             ServiceRequestLoadingScreen()
         }
@@ -100,89 +184,7 @@ fun ServiceRequestScreen(
             BookingConfirmationScreen(onGoToOrders)
         }
     }
-    Column(
-        modifier = Modifier
-            .background(Color(0xFFF5F5F5))
-            .padding(16.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
-            text = "Book a service",
-            fontSize = 22.sp,
-            fontStyle = FontStyle.Normal,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF0D141C),
-            style = MaterialTheme.typography.titleLarge,
-        )
-        ServiceInfo(subServiceName, subServiceImage)
-        Spacer(Modifier.height(12.dp))
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            item {
-                DateTimePickerSection(
-                    date = selectedDate,
-                    time = selectedTime,
-                    onDateChange = { selectedDate = it },
-                    onTimeChange = { selectedTime = it }
-                )
-            }
 
-            item {
-                MyTextField(
-                    modifier = Modifier
-                        .size(width = 358.dp, height = 104.dp),
-                    stateError = null,
-                    value = formState.address,
-                    onValueChange = {
-                        viewmodel.onEvent(ServiceRequestFormEvent.AddressChanged(it))
-                    },
-                    label = "Address",
-                )
-
-                MyTextField(
-                    modifier = Modifier
-                        .size(width = 358.dp, height = 144.dp),
-                    stateError = null,
-                    value = formState.specialInstructions,
-                    onValueChange = {
-                        viewmodel.onEvent(ServiceRequestFormEvent.InstructionChanged(it))
-                    },
-                    label = "Special Instruction",
-                )
-                Log.d("Date ", "$selectedDate")
-                Log.d("time ", "$selectedTime")
-            }
-
-
-            item {
-                Spacer(Modifier.height(200.dp))
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp)
-                        .size(width = 55.dp, height = 55.dp),
-                    onClick = {
-                        formState.preferredDate = selectedDate
-                        formState.preferredTime = selectedTime
-                        viewmodel.onEvent(ServiceRequestFormEvent.Submit(subServiceId))
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(Color(0xFF4A90E2))
-                ) {
-                    Text(
-                        text = " Confirm & Pay ",
-                        color = Color(0xFFFFFFFF)
-                    )
-                }
-                Spacer(Modifier.height(20.dp))
-            }
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

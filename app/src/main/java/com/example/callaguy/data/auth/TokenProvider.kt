@@ -12,6 +12,7 @@ interface TokenProvider {
 class SharedPrefTokenProvider @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) : TokenProvider {
+
     override fun getToken(): String? {
         val prefs = sharedPreferences.getString("jwt" , null)
         return prefs

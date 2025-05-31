@@ -1,6 +1,6 @@
 package com.example.callaguy.data.dto.subServices
 
-import com.example.callaguy.core.serialization.BigDecimalSerializer
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
 
@@ -9,9 +9,9 @@ import java.math.BigDecimal
 data class SubServiceResponseDto(
     val id : Int,
     val name : String,
-    @Serializable(with = BigDecimalSerializer::class)
+    @Contextual
     val basePrice : BigDecimal,
-    @Serializable(with = BigDecimalSerializer::class)
+    @Contextual
     val visitCharge : BigDecimal,
     val imageUrl : String? = null
 )

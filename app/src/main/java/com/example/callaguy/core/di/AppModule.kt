@@ -3,9 +3,12 @@ package com.example.callaguy.core.di
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import androidx.room.Database
 import androidx.room.Room
 import com.example.callaguy.core.constants.Constants
+import com.example.callaguy.core.serialization.BigDecimalSerializer
+import com.example.callaguy.core.serialization.LocalDateSerializer
+import com.example.callaguy.core.serialization.LocalDateTimeSerializer
+import com.example.callaguy.core.serialization.LocalTimeSerializer
 import com.example.callaguy.data.auth.AuthInterceptor
 import com.example.callaguy.data.auth.SharedPrefTokenProvider
 import com.example.callaguy.data.auth.TokenProvider
@@ -37,11 +40,16 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Singleton
 
 
@@ -76,10 +84,19 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(client : OkHttpClient) : Retrofit {
+        val json = Json {
+            serializersModule = SerializersModule {
+                contextual(LocalDate::class, LocalDateSerializer)
+                contextual(LocalTime::class, LocalTimeSerializer)
+                contextual(BigDecimal::class , BigDecimalSerializer)
+                contextual(LocalDateTime::class , LocalDateTimeSerializer)
+            }
+            ignoreUnknownKeys = true
+        }
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .client(client)
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
 

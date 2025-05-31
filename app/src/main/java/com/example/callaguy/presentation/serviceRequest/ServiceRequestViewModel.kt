@@ -69,7 +69,7 @@ class ServiceRequestViewModel @Inject constructor(
             _uiState.value = ServiceRequestUiState.Loading
             Log.d("check1" , "${_uiState.value}")
             delay(3000)
-            when(val response = serviceRequestUseCase.createServiceRequest(data)){
+            when(serviceRequestUseCase.createServiceRequest(data)){
                 is ResultClass.Authorized<*> -> {
                     _uiState.value = ServiceRequestUiState.Success
                     Log.d("check1" , "${_uiState.value}")

@@ -39,9 +39,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.callaguy.R
 import com.example.callaguy.domain.model.GetServiceRequestModel
 import com.example.callaguy.domain.model.ServiceRequestStatusModel
+import com.example.callaguy.presentation.loadingScreens.ErrorScreen
+import com.example.callaguy.presentation.serviceRequest.ServiceRequestLoadingScreen
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -50,14 +54,47 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun GetOrderRoot(modifier: Modifier = Modifier) {
+fun GetOrderRoot(
+    modifier: Modifier = Modifier,
+    onHomeClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onCardClick: (GetServiceRequestModel) -> Unit
+) {
+    val viewmodel: GetServiceRequestsViewModel = hiltViewModel()
+    val state by viewmodel.uiState.collectAsStateWithLifecycle()
+
+    when (state) {
+        is GetServiceRequestsUiState.Error -> {
+            ErrorScreen(
+                onRetry = {
+                    viewmodel.fetchOrders()
+                }
+            )
+        }
+        GetServiceRequestsUiState.Idle -> Unit
+        GetServiceRequestsUiState.Loading -> {
+            ServiceRequestLoadingScreen()
+        }
+
+        is GetServiceRequestsUiState.Success -> {
+            GetOrderScreen(
+                upcoming = (state as GetServiceRequestsUiState.Success).onGoing,
+                past = (state as GetServiceRequestsUiState.Success).past,
+                onCardClick = onCardClick
+            )
+        }
+    }
 
 }
 
 @Composable
-fun GetOrderScreen(upcoming : List<GetServiceRequestModel> , past : List<GetServiceRequestModel>  ) {
+fun GetOrderScreen(
+    upcoming: List<GetServiceRequestModel>,
+    past: List<GetServiceRequestModel>,
+    onCardClick: (GetServiceRequestModel) -> Unit
+) {
 
-    var upcomingOrPast by remember { mutableStateOf(true) }
+    var upcomingOrPast by remember { mutableStateOf(false) }
     val currentOrders = if (!upcomingOrPast) upcoming else past
 
     Column(
@@ -74,7 +111,10 @@ fun GetOrderScreen(upcoming : List<GetServiceRequestModel> , past : List<GetServ
         Spacer(Modifier.height(8.dp))
 
         if (currentOrders.isNotEmpty()) {
-            OrderList(orders = currentOrders)
+            OrderList(
+                orders = currentOrders,
+                onCardClick = onCardClick
+            )
         } else {
             NoOrderYet()
         }
@@ -82,21 +122,30 @@ fun GetOrderScreen(upcoming : List<GetServiceRequestModel> , past : List<GetServ
 }
 
 @Composable
-fun OrderList(orders: List<GetServiceRequestModel>) {
-    LazyColumn (
+fun OrderList(
+    orders: List<GetServiceRequestModel>,
+    onCardClick: (GetServiceRequestModel) -> Unit
+) {
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
     ) {
         items(orders) { order ->
-            OrderCard(order)
+            OrderCard(
+                order,
+                onCardClick
+            )
         }
 
     }
-    
+
 }
 
 @Composable
-fun OrderCard(order : GetServiceRequestModel) {
+fun OrderCard(
+    order: GetServiceRequestModel,
+    onCardClick: (GetServiceRequestModel) -> Unit
+) {
     Card(
         modifier = Modifier
             .padding(6.dp)
@@ -106,60 +155,62 @@ fun OrderCard(order : GetServiceRequestModel) {
             containerColor = Color(0xFFF7FAFC)
         )
     ) {
-       Row {
-           Column(
-               modifier = Modifier
-                   .weight(1.3f)
-           ) {
-               Text(
-                   modifier = Modifier
-                       .padding(top = 4.dp , start = 6.dp , bottom = 4.dp),
-                   text = order.status.toString(),
-                   fontStyle = FontStyle.Normal,
-                   fontSize = 14.sp,
-                   color = Color(0xFF4A739C)
-               )
-               Text(
-                   modifier = Modifier
-                       .padding(start = 6.dp,bottom = 4.dp),
-                   text = order.subService,
-                   style = MaterialTheme.typography.labelMedium,
-                   fontSize = 18.sp,
-                   fontWeight = FontWeight.SemiBold,
-                   color = Color.DarkGray
-               )
-               Text(
-                   modifier = Modifier
-                       .padding(start = 6.dp, bottom = 6.dp),
-                   text = formatPreferredDateTime(order.preferredDate , order.preferredTime),
-                   fontStyle = FontStyle.Normal,
-                   fontSize = 15.sp,
-                   color = Color(0xFF4A739C)
-               )
-               Button(
-                   modifier = Modifier
-                       .padding(6.dp),
-                   onClick = {  },
-                   colors = ButtonDefaults.buttonColors(
-                       containerColor =  Color(0xFFE8EDF5),
-                       contentColor = Color(0xFF777777)
-                   ),
-                   shape = RoundedCornerShape(20.dp),
-                   elevation = null
-               ) {
-                   Text("View Details")
-               }
+        Row {
+            Column(
+                modifier = Modifier
+                    .weight(1.3f)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp, start = 6.dp, bottom = 4.dp),
+                    text = order.status.toString(),
+                    fontStyle = FontStyle.Normal,
+                    fontSize = 14.sp,
+                    color = Color(0xFF4A739C)
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(start = 6.dp, bottom = 4.dp),
+                    text = order.subService,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.DarkGray
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(start = 6.dp, bottom = 6.dp),
+                    text = formatPreferredDateTime(order.preferredDate, order.preferredTime),
+                    fontStyle = FontStyle.Normal,
+                    fontSize = 15.sp,
+                    color = Color(0xFF4A739C)
+                )
+                Button(
+                    modifier = Modifier
+                        .padding(6.dp),
+                    onClick = {
+                        onCardClick(order)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE8EDF5),
+                        contentColor = Color(0xFF777777)
+                    ),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = null
+                ) {
+                    Text("View Details")
+                }
 
-           }
-           Image(
-               modifier = Modifier
-                   .clip(RoundedCornerShape(20.dp))
-                   .weight(0.7f),
-               painter = painterResource(R.drawable.cleaning),
-               contentScale = ContentScale.Crop,
-               contentDescription = null
-           )
-       }
+            }
+            Image(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .weight(0.7f),
+                painter = painterResource(R.drawable.cleaning),
+                contentScale = ContentScale.Crop,
+                contentDescription = null
+            )
+        }
     }
 }
 
@@ -262,13 +313,13 @@ fun formatPreferredDateTime(
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun preview(modifier: Modifier = Modifier) {
     GetOrderScreen(
         upcoming = fakeServiceRequests,
-        past = emptyList()
+        past = emptyList(),
+        onCardClick = {}
     )
 }
 

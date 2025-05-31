@@ -29,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,9 +57,13 @@ fun SubServiceScreenRoot(
     modifier: Modifier = Modifier
 ) {
     val viewModel : SubServiceViewModel = hiltViewModel()
-    viewModel.getSubServices(serviceId)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+
+    LaunchedEffect(serviceId) {
+        viewModel.getSubServices(serviceId)
+    }
 
     when(state){
         is SubServiceUiState.Error -> {
@@ -95,7 +100,6 @@ fun SubServiceScreen(
     onCardClick: (Int , String ) -> Unit,
     service: String,
     subServices: List<SubServiceResponseDto>,
-    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier
