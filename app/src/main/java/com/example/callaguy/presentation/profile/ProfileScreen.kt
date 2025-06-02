@@ -49,15 +49,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.callaguy.R
 import com.example.callaguy.data.local.ProfileEntity
-import com.example.callaguy.presentation.BottomNavBar
+import com.example.callaguy.presentation.navigation.BottomNavBar
 import com.example.callaguy.presentation.loadingScreens.ErrorScreen
 import com.example.callaguy.presentation.loadingScreens.ProfileLoadingScreen
 
 
 @Composable
 fun ProfileScreenRoot(
-    onHomeClick : () -> Unit,
-    onProfileClick: () -> Unit,
     onLogOut : () -> Unit
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
@@ -89,8 +87,6 @@ fun ProfileScreenRoot(
         ProfileScreen(
             profile ,
             profilePictureState ,
-            onHomeClick ,
-            onProfileClick ,
             onLogOut,
             onProfileImageSelected = { uri ->
                 viewModel.updateProfilePhoto(uri)
@@ -105,8 +101,6 @@ fun ProfileScreenRoot(
 fun ProfileScreen(
     profile: ProfileEntity,
     profilePictureState: UpdateProfileImage,
-    onHomeClick: () -> Unit,
-    onProfileClick: () -> Unit,
     onLogOut: () -> Unit,
     onProfileImageSelected : (Uri) -> Unit
 ) {
@@ -246,13 +240,6 @@ fun ProfileScreen(
                     .padding(  bottom = 4.dp )
                     .clickable { onLogOut() }
             )
-
-            // Bottom navigation
-            BottomNavBar(
-                onProfileClick = onProfileClick,
-                onHomeClick = onHomeClick
-            )
-            Spacer(Modifier.height(12.dp))
         }
     }
 }
@@ -303,9 +290,7 @@ fun PreviewProfile(modifier: Modifier = Modifier) {
             profilePicture = null ,
             isSynced = false
         ),
-        onProfileClick = {},
         onLogOut = {},
-        onHomeClick = {},
         profilePictureState = UpdateProfileImage.Idle ,
         onProfileImageSelected = {}
     )

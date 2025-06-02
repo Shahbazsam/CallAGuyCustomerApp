@@ -16,16 +16,19 @@ import com.example.callaguy.data.local.ProfileDao
 import com.example.callaguy.data.local.ProfileDatabase
 import com.example.callaguy.data.remote.ApiService
 import com.example.callaguy.data.repository.AuthRepositoryImpl
+import com.example.callaguy.data.repository.GetServiceRequestRepositoryImpl
 import com.example.callaguy.data.repository.ProfileRepositoryImpl
 import com.example.callaguy.data.repository.ServiceRepositoryImpl
 import com.example.callaguy.data.repository.ServiceRequestRepositoryImpl
 import com.example.callaguy.data.repository.SubServiceRepositoryImpl
 import com.example.callaguy.domain.repository.AuthRepository
+import com.example.callaguy.domain.repository.GetServiceRequestRepository
 import com.example.callaguy.domain.repository.ProfileRepository
 import com.example.callaguy.domain.repository.ServiceRepository
 import com.example.callaguy.domain.repository.ServiceRequestRepository
 import com.example.callaguy.domain.repository.SubServiceRepository
 import com.example.callaguy.domain.usecase.AuthUserUseCase
+import com.example.callaguy.domain.usecase.GetServiceRequestUseCase
 import com.example.callaguy.domain.usecase.ProfileUseCase
 import com.example.callaguy.domain.usecase.ServiceRequestUseCase
 import com.example.callaguy.domain.usecase.ServiceUseCases
@@ -120,6 +123,16 @@ object AppModule {
     @Singleton
     fun provideProfileDao(database: ProfileDatabase) : ProfileDao {
         return database.dao()
+    }
+
+    @Provides
+    fun provideOrderRequestRepository(apiService: ApiService) : GetServiceRequestRepository {
+        return GetServiceRequestRepositoryImpl(apiService)
+    }
+
+    @Provides
+    fun provideOrderRequestUseCase(getServiceRequestRepository: GetServiceRequestRepository) : GetServiceRequestUseCase {
+        return GetServiceRequestUseCase(getServiceRequestRepository)
     }
 
     @Provides

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -22,13 +21,11 @@ import androidx.compose.material.icons.outlined.DoneAll
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.StickyNote2
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.callaguy.domain.model.GetServiceRequestModel
 import com.example.callaguy.domain.model.ServiceRequestStatusModel
-import com.example.callaguy.presentation.login.LoginFormEvent
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -51,22 +47,27 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun GetDetailedScreen(modifier: Modifier = Modifier, order: GetServiceRequestModel) {
+fun GetDetailedScreen( order: GetServiceRequestModel) {
+
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF7FAFC)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             modifier = Modifier
-                .padding(14.dp),
+                .padding(8.dp , bottom = 6.dp),
             text = "Booking Details",
+            color = Color.DarkGray,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.headlineMedium
         )
         LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -114,7 +115,7 @@ fun GetDetailedScreen(modifier: Modifier = Modifier, order: GetServiceRequestMod
                 )
                 DetailsField(
                     icon = Icons.Outlined.StickyNote2,
-                    text = order.specialInstructions ?: "No Instructions",
+                    text = if (order.specialInstructions.isNullOrBlank()) "No Instructions" else order.specialInstructions,
                     textColor = Color.Black,
                     tint = null,
                     isBold = false
@@ -136,43 +137,42 @@ fun GetDetailedScreen(modifier: Modifier = Modifier, order: GetServiceRequestMod
                     fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.headlineMedium
                 )
-
-                Row(
-                    modifier = Modifier
-                        .padding(top = 6.dp)
-                        .fillMaxWidth()
-                ) {
-                    Button(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        onClick = {},
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(Color(0xFF4A90E2))
-                    ) {
-                        Text(
-                            text = " Raise Ticket ",
-                            color = Color(0xFFFFFFFF)
-                        )
-                    }
-                    Button(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        onClick = {},
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(Color(0xFF4A90E2))
-                    ) {
-                        Text(
-                            text = " Pay ",
-                            color = Color(0xFFFFFFFF)
-                        )
-                    }
-                }
             }
         }
+            Row(
+                modifier = Modifier
+                    .padding(top = 26.dp)
+                    .fillMaxWidth()
+            ) {
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    onClick = {},
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(Color(0xFF4A90E2))
+                ) {
+                    Text(
+                        text = " Raise Ticket ",
+                        color = Color(0xFFFFFFFF)
+                    )
+                }
+                Button(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    onClick = {},
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(Color(0xFF4A90E2))
+                ) {
+                    Text(
+                        text = " Pay ",
+                        color = Color(0xFFFFFFFF)
+                    )
+                }
+            }
 
     }
 }

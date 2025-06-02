@@ -1,6 +1,5 @@
 package com.example.callaguy.presentation.Service
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,14 +44,12 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.callaguy.R
 import com.example.callaguy.data.dto.service.response.ServiceResponseDto
-import com.example.callaguy.presentation.BottomNavBar
+import com.example.callaguy.presentation.navigation.BottomNavBar
 import com.example.callaguy.presentation.loadingScreens.ErrorScreen
 import com.example.callaguy.presentation.loadingScreens.ServicesLoadingScreen
 
 @Composable
 fun ServiceScreen(
-    onHomeClick : () -> Unit,
-    onProfileClick : () -> Unit,
     onCardClick: (Int , String ) -> Unit
 ) {
     val viewmodel : ServiceViewModel = hiltViewModel()
@@ -72,8 +68,6 @@ fun ServiceScreen(
         is ServiceUiState.success -> {
             Services(
                 services = (state as ServiceUiState.success).services,
-                onProfileClick = onProfileClick,
-                onHomeClick = onHomeClick,
                 onCardClick = onCardClick
             )
         }
@@ -84,12 +78,9 @@ fun ServiceScreen(
 fun Services(
     services : List<ServiceResponseDto>,
     onCardClick: (Int , String) -> Unit,
-    onHomeClick : () -> Unit,
-    onProfileClick : () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .systemBarsPadding()
             .background(Color(0xFFF5F5F5))
             .fillMaxSize()
     ) {
@@ -113,24 +104,6 @@ fun Services(
                 .fillMaxSize()
                 .padding(top = 60.dp)
         ) {
-            /*item {
-                LazyRow(
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                ) {
-                    items(services) {
-                        ServicesCard(
-                            onCardClick = onCardClick,
-                            service = it,
-                            modifier = Modifier
-                                .padding(12.dp)
-                                .height(180.dp)
-                                .width(300.dp)
-                        )
-                    }
-                }
-                Spacer(Modifier.height(12.dp))
-            }*/
             items(services) {
                 ServicesCard(
                     onCardClick = onCardClick,
@@ -138,17 +111,6 @@ fun Services(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                 )
             }
-            item { Spacer(Modifier.height(77.dp)) }
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        ) {
-            BottomNavBar(
-                onProfileClick = {onProfileClick()},
-                onHomeClick = {onHomeClick()}
-            )
         }
     }
 }

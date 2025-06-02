@@ -20,9 +20,16 @@ class GetServiceRequestsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<GetServiceRequestsUiState>(GetServiceRequestsUiState.Idle)
     val uiState = _uiState.asStateFlow()
 
+    private var cachedOnGoing: List<GetServiceRequestModel> = emptyList()
+    private var cachedPast: List<GetServiceRequestModel> = emptyList()
+
     init {
         fetchOrders()
     }
+    fun getOrderById(id: Int): GetServiceRequestModel? {
+        return (cachedOnGoing + cachedPast).find { it.id == id }
+    }
+
 
     fun fetchOrders() {
         viewModelScope.launch {
@@ -38,6 +45,8 @@ class GetServiceRequestsViewModel @Inject constructor(
                     val ( onGoing , past ) = nonNullList.partition {
                         it.status in onGoingStatuses
                     }
+                    cachedOnGoing = onGoing
+                    cachedPast = past
                     _uiState.value = GetServiceRequestsUiState.Success(onGoing, past)
                 }
                 is ResultClass.UnKnownError<*> -> {
