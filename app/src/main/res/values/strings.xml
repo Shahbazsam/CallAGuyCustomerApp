@@ -4,4 +4,13 @@
     <string name="loading_failed">Failed to load</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading</string>
+    <string name="raise_a_ticket">Raise A Ticket</string>
+    <string name="what_s_the_issue">What\'s the issue ?</string>
+    <string name="raise_ticket">" Raise a Ticket "</string>
+    <string name="upcoming">UpComing</string>
+    <string name="past">Past</string>
+    <string name="open">Open</string>
+    <string name="resolved">Resolved</string>
+    <string name="you_didn_t_raised_any_ticket_yet">You didn\'t raised any ticket yet.</string>
+    <string name="no_tickets_yet">No Tickets Yet</string>
 </resources>

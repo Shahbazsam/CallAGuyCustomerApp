@@ -181,7 +181,10 @@ fun ServiceRequestScreen(
             ServiceRequestLoadingScreen()
         }
         is ServiceRequestUiState.Success -> {
-            BookingConfirmationScreen(onGoToOrders)
+            BookingConfirmationScreen(
+                text = "Booking Confirmed",
+                onGoToOrdersOrTickets = onGoToOrders
+            )
         }
     }
 
@@ -383,7 +386,8 @@ fun ServiceRequestLoadingScreen() {
 
 @Composable
 fun BookingConfirmationScreen(
-    onGoToOrders: () -> Unit
+    text : String,
+    onGoToOrdersOrTickets : () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -409,7 +413,7 @@ fun BookingConfirmationScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Booking Confirmed",
+                text = text,
                 fontWeight = FontWeight.Bold,
                 fontSize = 22.sp,
                 color = Color.Black
@@ -426,7 +430,7 @@ fun BookingConfirmationScreen(
         }
 
         Button(
-            onClick = onGoToOrders,
+            onClick = onGoToOrdersOrTickets,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -446,10 +450,4 @@ fun BookingConfirmationScreen(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun preview2(modifier: Modifier = Modifier) {
-    BookingConfirmationScreen(
-        onGoToOrders = {}
-    )
-}
+

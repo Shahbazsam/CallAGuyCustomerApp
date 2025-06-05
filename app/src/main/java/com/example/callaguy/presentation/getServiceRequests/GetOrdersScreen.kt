@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -100,7 +101,9 @@ fun GetOrderScreen(
             .fillMaxHeight()
             .fillMaxWidth()
     ) {
-        OrderToggleButtons(
+        OrderOrTicketToggleButtons (
+            leftText = stringResource(R.string.upcoming),
+            rightText = stringResource(R.string.past),
             upcomingOrPast = upcomingOrPast
         ) {
             upcomingOrPast = it
@@ -195,7 +198,7 @@ fun OrderCard(
                     shape = RoundedCornerShape(20.dp),
                     elevation = null
                 ) {
-                    Text("View Details")
+                    Text("View Details", fontSize = 14.sp, fontWeight = FontWeight.Medium)
                 }
 
             }
@@ -223,11 +226,13 @@ fun NoOrderYet() {
         verticalArrangement = Arrangement.Top
     ) {
         Image(
-            painter = painterResource(R.drawable.no_orders), // Replace with your icon
+            painter = painterResource(R.drawable.no_orders),
             contentDescription = "No Orders",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(200.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .size(400.dp)
                 .padding(bottom = 24.dp)
         )
 
@@ -254,7 +259,9 @@ fun NoOrderYet() {
 
 
 @Composable
-fun OrderToggleButtons(
+fun OrderOrTicketToggleButtons(
+    leftText : String,
+    rightText : String,
     upcomingOrPast: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
@@ -278,7 +285,7 @@ fun OrderToggleButtons(
             shape = RoundedCornerShape(20.dp),
             elevation = null
         ) {
-            Text("Upcoming")
+            Text(leftText)
         }
 
         Button(
@@ -291,7 +298,7 @@ fun OrderToggleButtons(
             shape = RoundedCornerShape(20.dp),
             elevation = null
         ) {
-            Text("Past")
+            Text(rightText)
         }
     }
 }

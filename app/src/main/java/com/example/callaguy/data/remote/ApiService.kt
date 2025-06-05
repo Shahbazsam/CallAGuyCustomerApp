@@ -8,6 +8,8 @@ import com.example.callaguy.data.dto.service.response.ServiceResponseDto
 import com.example.callaguy.data.dto.serviceRequest.CreateServiceRequest
 import com.example.callaguy.data.dto.serviceRequest.GetServiceRequestDto
 import com.example.callaguy.data.dto.subServices.SubServiceResponseDto
+import com.example.callaguy.data.dto.supportTicket.CreateSupportTicketDto
+import com.example.callaguy.data.dto.supportTicket.SupportTicketsDto
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -46,4 +48,10 @@ interface ApiService {
 
     @GET("/customer_service_request")
     suspend fun getServiceRequests() : List<GetServiceRequestDto?>
+
+    @POST("/supportTicket/create")
+    suspend fun createSupportTicket( @Body data : CreateSupportTicketDto )
+
+    @GET("/supportTicket/customer_tickets")
+    suspend fun getSupportTickets() : List<SupportTicketsDto>
 }
