@@ -21,18 +21,24 @@ import com.example.callaguy.data.repository.ProfileRepositoryImpl
 import com.example.callaguy.data.repository.ServiceRepositoryImpl
 import com.example.callaguy.data.repository.ServiceRequestRepositoryImpl
 import com.example.callaguy.data.repository.SubServiceRepositoryImpl
+import com.example.callaguy.data.repository.SupportMessageRepositoryImpl
+import com.example.callaguy.data.repository.SupportTicketRepositoryImpl
 import com.example.callaguy.domain.repository.AuthRepository
 import com.example.callaguy.domain.repository.GetServiceRequestRepository
 import com.example.callaguy.domain.repository.ProfileRepository
 import com.example.callaguy.domain.repository.ServiceRepository
 import com.example.callaguy.domain.repository.ServiceRequestRepository
 import com.example.callaguy.domain.repository.SubServiceRepository
+import com.example.callaguy.domain.repository.SupportMessageRepository
+import com.example.callaguy.domain.repository.SupportTicketRepository
 import com.example.callaguy.domain.usecase.AuthUserUseCase
 import com.example.callaguy.domain.usecase.GetServiceRequestUseCase
 import com.example.callaguy.domain.usecase.ProfileUseCase
 import com.example.callaguy.domain.usecase.ServiceRequestUseCase
 import com.example.callaguy.domain.usecase.ServiceUseCases
 import com.example.callaguy.domain.usecase.SubServiceUseCase
+import com.example.callaguy.domain.usecase.SupportMessageUseCase
+import com.example.callaguy.domain.usecase.SupportTicketUseCase
 import com.example.callaguy.domain.validation.ValidateEmail
 import com.example.callaguy.domain.validation.ValidatePassword
 import com.example.callaguy.domain.validation.ValidateRepeatedPassword
@@ -123,6 +129,26 @@ object AppModule {
     @Singleton
     fun provideProfileDao(database: ProfileDatabase) : ProfileDao {
         return database.dao()
+    }
+
+    @Provides
+    fun provideSupportMessageRepository(apiService: ApiService) : SupportMessageRepository {
+        return SupportMessageRepositoryImpl(apiService)
+    }
+
+    @Provides
+    fun provideSupportMessageUseCase( supportMessageRepository : SupportMessageRepository) : SupportMessageUseCase {
+        return SupportMessageUseCase( supportMessageRepository )
+    }
+
+    @Provides
+    fun provideSupportTicketRepository(apiService: ApiService) : SupportTicketRepository {
+        return SupportTicketRepositoryImpl(apiService)
+    }
+
+    @Provides
+    fun provideSupportTicketUseCase( supportTicketRepository : SupportTicketRepository) : SupportTicketUseCase {
+        return SupportTicketUseCase(supportTicketRepository)
     }
 
     @Provides

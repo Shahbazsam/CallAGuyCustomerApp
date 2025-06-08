@@ -3,6 +3,8 @@ package com.example.callaguy.data.remote
 import com.example.callaguy.data.dto.Authentication.AuthenticationRequestDto
 import com.example.callaguy.data.dto.Authentication.LoginRequestDto
 import com.example.callaguy.data.dto.Authentication.LoginResponseDto
+import com.example.callaguy.data.dto.chatScreen.SendSupportMessageDto
+import com.example.callaguy.data.dto.chatScreen.SupportMessagesDto
 import com.example.callaguy.data.dto.profile.ProfileInfoResponseDto
 import com.example.callaguy.data.dto.service.response.ServiceResponseDto
 import com.example.callaguy.data.dto.serviceRequest.CreateServiceRequest
@@ -54,4 +56,12 @@ interface ApiService {
 
     @GET("/supportTicket/customer_tickets")
     suspend fun getSupportTickets() : List<SupportTicketsDto>
+
+    @POST("/support_messages/create")
+    suspend fun sendSupportMessage(data : SendSupportMessageDto)
+
+    @GET("/support_messages/{id}")
+    suspend fun getSupportMessages(
+        @Path("id") id: Int
+    ) : List<SupportMessagesDto>
 }

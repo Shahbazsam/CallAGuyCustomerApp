@@ -32,7 +32,6 @@ class SubServiceViewModel @Inject constructor(
                     _uiState.value = SubServiceUiState.Error(
                         code = "500",
                         message = "Something went wrong , please try again"
-
                     )
                 }
                 is ResultClass.Unauthorized<*> -> {

@@ -13,4 +13,6 @@
     <string name="resolved">Resolved</string>
     <string name="you_didn_t_raised_any_ticket_yet">You didn\'t raised any ticket yet.</string>
     <string name="no_tickets_yet">No Tickets Yet</string>
+    <string name="user">User</string>
+    <string name="support_agent">Support Agent</string>
 </resources>
