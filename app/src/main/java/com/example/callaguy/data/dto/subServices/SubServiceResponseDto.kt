@@ -13,5 +13,5 @@ data class SubServiceResponseDto(
     val basePrice : BigDecimal,
     @Contextual
     val visitCharge : BigDecimal,
-    val imageUrl : String? = null
+    val imageUrl : String
 )

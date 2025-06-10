@@ -28,7 +28,6 @@ data class SupportTicketsDto(
     }
 }
 
-
 enum class SupportTicketStatus {
     OPEN,
     RESOLVED

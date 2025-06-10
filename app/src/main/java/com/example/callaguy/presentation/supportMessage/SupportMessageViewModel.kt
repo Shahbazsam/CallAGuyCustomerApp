@@ -1,5 +1,6 @@
 package com.example.callaguy.presentation.supportMessage
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.callaguy.domain.model.ResultClass
@@ -56,6 +57,8 @@ class SupportMessageViewModel@Inject constructor(
     }
 
     fun sendMessage( ticketId : Int , message : String , onSuccess : () -> Unit ) {
+
+        Log.d("SendMsg", "Attempting to send message: $message")
         val data = SendSupportMessageModel(
             ticketId = ticketId,
             message = message
@@ -65,13 +68,16 @@ class SupportMessageViewModel@Inject constructor(
 
             when(useCase.sendMessages(data)){
                 is ResultClass.Authorized<*> -> {
+                    Log.d("SendMsg", "Message sent successfully!")
                     getMessages(ticketId)
                     onSuccess()
                 }
                 is ResultClass.UnKnownError<*> -> {
+                    Log.d("SendMsg", "Send failed: Unknown error")
                     _toastEvents.send("Session Expired")
                 }
                 is ResultClass.Unauthorized<*> -> {
+                    Log.d("SendMsg", "Send failed: Unauthorized")
                     _toastEvents.send("Failed to send Messages")
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.callaguy.domain.usecase
 
+import android.util.Log
 import com.example.callaguy.domain.model.CreateSupportTicketModel
 import com.example.callaguy.domain.model.ResultClass
 import com.example.callaguy.domain.model.SupportTicketsModel
@@ -26,15 +27,18 @@ class SupportTicketUseCase(
     suspend fun getSupportTickets(): ResultClass<List<SupportTicketsModel>> {
         return try {
             val response = repository.getSupportTickets()
+            Log.d("response" , "$response")
             ResultClass.Authorized(response.map { tickets ->
                 tickets.toModel()
             })
         } catch (e: HttpException) {
+            Log.d("tickets1", "${e.message}")
             when (e.code()) {
                 401 -> ResultClass.Unauthorized()
                 else -> ResultClass.UnKnownError()
             }
         } catch (e: Exception) {
+            Log.d("tickets", "${e.message}")
             ResultClass.UnKnownError()
         }
     }

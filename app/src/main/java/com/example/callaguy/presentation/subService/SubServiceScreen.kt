@@ -1,13 +1,15 @@
 package com.example.callaguy.presentation.subService
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,45 +20,48 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.example.callaguy.R
 import com.example.callaguy.data.dto.subServices.SubServiceResponseDto
 import com.example.callaguy.presentation.loadingScreens.ErrorScreen
 import com.example.callaguy.presentation.loadingScreens.SubServicesLoadingScreen
-import java.math.BigDecimal
 
 @Composable
 fun SubServiceScreenRoot(
-    onCardClick: (Int , String ) -> Unit,
-    serviceId : Int,
-    serviceName : String ,
-    modifier: Modifier = Modifier
+    onCardClick: (Int, String , String) -> Unit,
+    serviceId: Int,
+    serviceName: String,
 ) {
-    val viewModel : SubServiceViewModel = hiltViewModel()
+    val viewModel: SubServiceViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -65,7 +70,7 @@ fun SubServiceScreenRoot(
         viewModel.getSubServices(serviceId)
     }
 
-    when(state){
+    when (state) {
         is SubServiceUiState.Error -> {
             ErrorScreen(
                 onRetry = { viewModel.getSubServices(serviceId) }
@@ -77,12 +82,14 @@ fun SubServiceScreenRoot(
                 Toast.LENGTH_LONG
             ).show()
         }
+
         SubServiceUiState.Idle -> Unit
         SubServiceUiState.Loading -> {
             SubServicesLoadingScreen(
                 service = serviceName
             )
         }
+
         is SubServiceUiState.Success -> {
             SubServiceScreen(
                 onCardClick = onCardClick,
@@ -94,148 +101,147 @@ fun SubServiceScreenRoot(
 
 }
 
-
 @Composable
 fun SubServiceScreen(
-    onCardClick: (Int , String ) -> Unit,
+    onCardClick: (Int, String, String) -> Unit,
     service: String,
-    subServices: List<SubServiceResponseDto>,
+    subServices: List<SubServiceResponseDto>
 ) {
     Column(
         modifier = Modifier
-            .background(Color(0xFFF5F5F5))
-            .fillMaxWidth()
+            .fillMaxSize()
+            .background(Color(0xFFF7FAFC))
     ) {
-        Icon(
+        Box(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .size(80.dp),
-            painter = painterResource(R.drawable.logoo),
-            contentDescription = null,
-            tint = Color(0xFF777777)
-        )
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(Color(0xFFF7FAFC)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Sub-Services",
+                fontWeight = FontWeight.SemiBold,
+                color = Color.DarkGray,
+                fontSize = 22.sp
+
+            )
+        }
+
         Text(
             modifier = Modifier
-                .padding( start = 8.dp),
-            text = "$service Services :",
+                .padding(start = 16.dp),
+            text = service,
             style = MaterialTheme.typography.displayMedium,
             fontSize = 26.sp,
             color = Color.DarkGray,
             fontWeight = FontWeight.Bold
         )
-        Spacer(Modifier.weight(1f))
-        LazyColumn {
+
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             items(subServices) { subService ->
-                SubServiceCards(onCardClick ,  subService)
-            }
-            item {
-               Spacer(Modifier.height(12.dp))
+                SubServiceCards(onCardClick, subService)
             }
         }
     }
 }
+
+
 
 
 @Composable
-fun SubServiceCards(onCardClick: (Int , String) -> Unit,subService: SubServiceResponseDto, modifier: Modifier = Modifier) {
+fun SubServiceCards(
+    onCardClick: (Int, String , String) -> Unit,
+    subService: SubServiceResponseDto,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier
-            .padding(6.dp),
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFFFFFF)
-        )
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7FAFC))
     ) {
-        Column {
-            Image(
-                painter = painterResource(R.drawable.cleaning),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
-            Row(
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 10.dp, top = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(1f)
+                    .padding(12.dp)
             ) {
                 Text(
-                    modifier = Modifier
-                        .padding(top = 10.dp , bottom = 10.dp),
                     text = subService.name,
-                    fontSize = 22.sp,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFF777777),
-                    fontWeight = FontWeight.Normal
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 18.sp,
+                    color = Color(0xFF1A1A1A),
+                    fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .size(32.dp),
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = Color(0xFF4787D3)
-                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
-                    modifier = Modifier
-                        .padding(start = 8.dp, top = 4.dp, end = 8.dp),
-                    text = "4.4 ",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4787D3)
+                    text = "Transform your home with our ${subService.name.lowercase()} service.",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = 14.sp,
+                    color = Color(0xFF57738F)
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "₽${subService.basePrice}",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color(0xFF57738F)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextButton(
+                    onClick = {
+                        onCardClick(subService.id, subService.name , subService.imageUrl)
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = Color(0xFFE8EDF5),
+                        contentColor = Color(0xFF777777)
+                    )
+                ) {
+                    Text(
+                        text = "Book Now",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp
+                    )
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                    )
+                }
             }
 
-            Row(
-                modifier = Modifier
-                    .padding(top = 10.dp, bottom = 20.dp)
-            ) {
-                PriceTag(
-                    modifier = Modifier
-                        .weight(1f),
-                    tag = "Base price :",
-                    price = "₽${subService.basePrice}",
-                )
-                PriceTag(
-                    modifier = Modifier
-                        .weight(1f),
-                    tag = "Visit charge :",
-                    price = "₽${subService.visitCharge}",
-                )
-            }
-            TextButton(
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(subService.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .padding(8.dp)
-                    .align(Alignment.End),
-                onClick = {
-                    onCardClick(
-                        subService.id,
-                        subService.name,
-                    )
-                },
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.textButtonColors(
-                    containerColor = Color(0x112196F3)
-                )
-            ) {
-                Text(
-                    text = "Book Now",
-                    color = Color(0xFF1976D2),
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp
-                )
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    tint = Color(0xFF1976D2)
-                )
-            }
-
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+            )
         }
     }
 }
+
 
 @Composable
 fun PriceTag(tag: String, price: String, modifier: Modifier = Modifier) {

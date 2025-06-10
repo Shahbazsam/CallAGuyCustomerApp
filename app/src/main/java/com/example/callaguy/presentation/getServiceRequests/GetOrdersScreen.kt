@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.example.callaguy.R
 import com.example.callaguy.domain.model.GetServiceRequestModel
 import com.example.callaguy.domain.model.ServiceRequestStatusModel
@@ -202,13 +203,14 @@ fun OrderCard(
                 }
 
             }
-            Image(
+            AsyncImage(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .weight(0.7f),
-                painter = painterResource(R.drawable.cleaning),
+                    .padding(8.dp)
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                model = order.image,
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
-                contentDescription = null
             )
         }
     }
@@ -317,86 +319,4 @@ fun formatPreferredDateTime(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun preview(modifier: Modifier = Modifier) {
-    GetOrderScreen(
-        upcoming = fakeServiceRequests,
-        past = emptyList(),
-        onCardClick = {}
-    )
-}
 
-
-val fakeServiceRequests = listOf(
-    GetServiceRequestModel(
-        id = 1,
-        customerId = 1001,
-        professionalId = 2001,
-        amount = BigDecimal("49.99"),
-        subService = "AC Repair",
-        subServiceId = 301,
-        status = ServiceRequestStatusModel.REQUESTED,
-        preferredDate = LocalDate.now().plusDays(2),
-        preferredTime = LocalTime.of(14, 30),
-        address = "123 Main Street, Springfield",
-        specialInstructions = "Please call before arriving.",
-        createdAt = LocalDateTime.now().minusDays(1)
-    ),
-    GetServiceRequestModel(
-        id = 2,
-        customerId = 1002,
-        professionalId = 2002,
-        amount = BigDecimal("99.99"),
-        subService = "Home Cleaning",
-        subServiceId = 302,
-        status = ServiceRequestStatusModel.ACCEPTED,
-        preferredDate = LocalDate.now().plusDays(1),
-        preferredTime = LocalTime.of(10, 0),
-        address = "456 Elm Street, Shelbyville",
-        specialInstructions = null,
-        createdAt = LocalDateTime.now().minusDays(2)
-    ),
-    GetServiceRequestModel(
-        id = 3,
-        customerId = 1003,
-        professionalId = null,
-        amount = BigDecimal("74.50"),
-        subService = "Plumbing",
-        subServiceId = 303,
-        status = ServiceRequestStatusModel.REQUESTED,
-        preferredDate = LocalDate.now().plusDays(3),
-        preferredTime = LocalTime.of(9, 15),
-        address = "789 Oak Avenue, Capital City",
-        specialInstructions = "Fix leaking sink in the kitchen.",
-        createdAt = LocalDateTime.now()
-    ),
-    GetServiceRequestModel(
-        id = 4,
-        customerId = 1004,
-        professionalId = 2003,
-        amount = BigDecimal("129.00"),
-        subService = "Electrical",
-        subServiceId = 304,
-        status = ServiceRequestStatusModel.COMPLETED,
-        preferredDate = LocalDate.now().minusDays(3),
-        preferredTime = LocalTime.of(13, 45),
-        address = "321 Pine Road, Ogdenville",
-        specialInstructions = null,
-        createdAt = LocalDateTime.now().minusDays(4)
-    ),
-    GetServiceRequestModel(
-        id = 5,
-        customerId = 1005,
-        professionalId = 2004,
-        amount = BigDecimal("59.99"),
-        subService = "Pest Control",
-        subServiceId = 305,
-        status = ServiceRequestStatusModel.CANCELLED,
-        preferredDate = LocalDate.now().plusDays(5),
-        preferredTime = LocalTime.of(16, 0),
-        address = "654 Cedar Blvd, North Haverbrook",
-        specialInstructions = "Ant infestation in backyard.",
-        createdAt = LocalDateTime.now().minusHours(6)
-    )
-)

@@ -58,7 +58,7 @@ interface ApiService {
     suspend fun getSupportTickets() : List<SupportTicketsDto>
 
     @POST("/support_messages/create")
-    suspend fun sendSupportMessage(data : SendSupportMessageDto)
+    suspend fun sendSupportMessage( @Body data : SendSupportMessageDto)
 
     @GET("/support_messages/{id}")
     suspend fun getSupportMessages(

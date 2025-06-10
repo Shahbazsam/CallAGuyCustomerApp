@@ -7,9 +7,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.callaguy.data.dto.supportTicket.SupportTicketStatus
 import com.example.callaguy.domain.model.GetServiceRequestModel
 import com.example.callaguy.presentation.Service.ServiceScreen
 import com.example.callaguy.presentation.auth.RegistrationScreen
@@ -22,6 +24,9 @@ import com.example.callaguy.presentation.profile.ProfileScreenRoot
 import com.example.callaguy.presentation.serviceRequest.ServiceRequestScreen
 import com.example.callaguy.presentation.splashScreen.SplashScreen
 import com.example.callaguy.presentation.subService.SubServiceScreenRoot
+import com.example.callaguy.presentation.supportMessage.SupportMessageScreen
+import com.example.callaguy.presentation.supportTicket.CreateSupportTicketRoot
+import com.example.callaguy.presentation.supportTicket.TicketsScreenRoot
 import dagger.hilt.android.EntryPointAccessors
 import kotlin.reflect.typeOf
 
@@ -100,11 +105,12 @@ fun AppNavigationManager(
         composable<Destinations.SubServiceScreenRoute> {
             val args = it.toRoute<Destinations.SubServiceScreenRoute>()
             SubServiceScreenRoot(
-                onCardClick = { id, name ->
+                onCardClick = { id, name , image ->
                     navController.navigate(
                         Destinations.ServiceRequestRoute(
                             subServiceId = id,
-                            subServiceName = name
+                            subServiceName = name,
+                            subServiceImage = image
                         )
                     )
                 },
@@ -115,10 +121,14 @@ fun AppNavigationManager(
         composable<Destinations.ServiceRequestRoute> {
             val args = it.toRoute<Destinations.ServiceRequestRoute>()
             ServiceRequestScreen(
-                onGoToOrders = { navController.navigate(Destinations.OrdersScreenRoute) },
+                onGoToOrders = {
+                    navController.navigate(Destinations.OrdersScreenRoute){
+                    popUpTo(Destinations.ServiceScreenRoute)
+                }
+                               },
                 subServiceId = args.subServiceId,
                 subServiceName = args.subServiceName,
-                subServiceImage = R.drawable.cleaning,
+                subServiceImage = args.subServiceImage,
             )
         }
 
@@ -140,7 +150,39 @@ fun AppNavigationManager(
         ) {
             val args = it.toRoute<Destinations.DetailedOrderRoute>()
             GetDetailedScreen(
+                onRaise = { serviceRequestId ->
+                    navController.navigate(Destinations.CreateSupportScreenRoute(serviceRequestId))
+                },
                 order = args.order
+            )
+        }
+        composable<Destinations.CreateSupportScreenRoute> {
+            val args = it.toRoute<Destinations.CreateSupportScreenRoute>()
+            CreateSupportTicketRoot(
+                serviceRequestId = args.serviceRequestId,
+                onGoToTickets = {
+                    navController.navigate(Destinations.TicketsScreenRoute){
+                        popUpTo(Destinations.ServiceScreenRoute)
+                    }
+                }
+            )
+        }
+        composable<Destinations.TicketsScreenRoute> {
+            TicketsScreenRoot(
+                onCardClick = { id , status ->
+                    navController.navigate(Destinations.SupportMessageScreenRoute(id , status))
+                }
+            )
+        }
+        composable<Destinations.SupportMessageScreenRoute>(
+            typeMap = mapOf(
+                typeOf<SupportTicketStatus>() to NavType.EnumType<SupportTicketStatus>(SupportTicketStatus::class.java)
+            )
+        ) {
+            val args = it.toRoute<Destinations.SupportMessageScreenRoute>()
+            SupportMessageScreen(
+                ticketId = args.ticketId,
+                status = args.status
             )
         }
     }

@@ -20,6 +20,7 @@ data class GetServiceRequestModel(
     @Serializable( with = BigDecimalSerializer::class)
     val amount: BigDecimal,
     val subService: String,
+    val image : String?,
     val subServiceId: Int,
     val status: ServiceRequestStatusModel,
     @Serializable(with = LocalDateSerializer::class)

@@ -44,7 +44,6 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.callaguy.R
 import com.example.callaguy.data.dto.service.response.ServiceResponseDto
-import com.example.callaguy.presentation.navigation.BottomNavBar
 import com.example.callaguy.presentation.loadingScreens.ErrorScreen
 import com.example.callaguy.presentation.loadingScreens.ServicesLoadingScreen
 

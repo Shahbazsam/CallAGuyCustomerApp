@@ -47,7 +47,10 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun GetDetailedScreen( order: GetServiceRequestModel) {
+fun GetDetailedScreen(
+    onRaise : (Int) -> Unit,
+    order: GetServiceRequestModel
+) {
 
     Column(
         modifier = Modifier
@@ -149,7 +152,9 @@ fun GetDetailedScreen( order: GetServiceRequestModel) {
                         .weight(1f)
                         .fillMaxWidth()
                         .padding(8.dp),
-                    onClick = {},
+                    onClick = {
+                        onRaise(order.id)
+                    },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(Color(0xFF4A90E2))
                 ) {
@@ -231,27 +236,4 @@ fun getStatusUI(status: ServiceRequestStatusModel): StatusUI {
         ServiceRequestStatusModel.COMPLETED -> StatusUI(Icons.Outlined.DoneAll, Color(0xFF2ECC71)) // Green
         ServiceRequestStatusModel.CANCELLED -> StatusUI(Icons.Outlined.Cancel, Color(0xFFE74C3C)) // Red
     }
-}
-
-
-
-@Preview
-@Composable
-fun Preview() {
-    GetDetailedScreen(
-        order = GetServiceRequestModel(
-            id = 5,
-            customerId = 1005,
-            professionalId = 2004,
-            amount = BigDecimal("59.99"),
-            subService = "Pest Control",
-            subServiceId = 305,
-            status = ServiceRequestStatusModel.REQUESTED,
-            preferredDate = LocalDate.now().plusDays(5),
-            preferredTime = LocalTime.of(16, 0),
-            address = "654 Cedar Blvd, North Haverbrook whats up my nigga vhjfbhdfhvbbbvhhhfnnvn",
-            specialInstructions = "Ant infestation in backyard.",
-            createdAt = LocalDateTime.now().minusHours(6)
-        )
-    )
 }

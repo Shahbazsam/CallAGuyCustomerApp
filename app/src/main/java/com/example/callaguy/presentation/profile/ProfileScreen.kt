@@ -49,7 +49,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.callaguy.R
 import com.example.callaguy.data.local.ProfileEntity
-import com.example.callaguy.presentation.navigation.BottomNavBar
 import com.example.callaguy.presentation.loadingScreens.ErrorScreen
 import com.example.callaguy.presentation.loadingScreens.ProfileLoadingScreen
 

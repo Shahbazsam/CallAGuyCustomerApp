@@ -20,6 +20,7 @@ class GetServiceRequestUseCase(
                         professionalId = data.professionalId,
                         amount = data.amount,
                         subService = data.subService,
+                        image = data.image,
                         subServiceId = data.subServiceId,
                         status = data.status.toModel(),
                         preferredTime = data.preferredTime,

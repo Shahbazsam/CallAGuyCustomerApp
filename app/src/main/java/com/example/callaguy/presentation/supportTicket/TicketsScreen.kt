@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.callaguy.R
@@ -50,9 +51,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun TicketsScreenRoot(onCardClick: (Int) -> Unit) {
+fun TicketsScreenRoot(onCardClick: (Int , SupportTicketStatus) -> Unit) {
 
-    val viewmodel: GetTicketsViewModel = viewModel()
+    val viewmodel: GetTicketsViewModel = hiltViewModel()
     val state by viewmodel.uiState.collectAsStateWithLifecycle()
 
     when (state) {
@@ -81,7 +82,7 @@ fun TicketsScreenRoot(onCardClick: (Int) -> Unit) {
 fun TicketsScreen(
     open: List<SupportTicketsModel>,
     resolved: List<SupportTicketsModel>,
-    onCardClick: (Int) -> Unit
+    onCardClick: (Int , SupportTicketStatus) -> Unit
 ) {
     var openOrResolved by remember { mutableStateOf(false) }
     val currentTickets = if (!openOrResolved) open else resolved
@@ -114,7 +115,7 @@ fun TicketsScreen(
 @Composable
 fun TicketList(
     tickets : List<SupportTicketsModel>,
-    onCardClick: (Int) -> Unit
+    onCardClick: (Int , SupportTicketStatus) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -132,7 +133,7 @@ fun TicketList(
 @Composable
 fun TicketCard(
     ticket: SupportTicketsModel,
-    onCardClick: (Int) -> Unit
+    onCardClick: (Int , SupportTicketStatus) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -181,7 +182,7 @@ fun TicketCard(
                     .align(Alignment.CenterHorizontally)
                     .padding(6.dp),
                 onClick = {
-                    onCardClick(ticket.ticketId)
+                    onCardClick(ticket.ticketId , ticket.status)
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFE8EDF5),
@@ -239,35 +240,3 @@ fun NoTicketYet() {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun Preview(modifier: Modifier = Modifier) {
-    val fakeDate = LocalDateTime.of(2025, 6, 1, 10, 30)
-
-    val fakeOpenTickets = listOf(
-        SupportTicketsModel(
-            ticketId = 3,
-            customerId = 1,
-            serviceRequestId = 101,
-            issueType = "App crash on submit",
-            status = SupportTicketStatus.OPEN,
-            createdAt = fakeDate
-        ),
-        SupportTicketsModel(
-            ticketId = 4,
-            customerId = 2,
-            serviceRequestId = 102,
-            issueType = "Wrong total shown in bill",
-            status = SupportTicketStatus.OPEN,
-            createdAt = fakeDate.minusDays(1)
-        )
-    )
-
-    val fakeResolvedTickets = emptyList<SupportTicketsModel>()
-    TicketsScreen(
-        open = fakeOpenTickets,
-        resolved = fakeResolvedTickets,
-        onCardClick = {}
-    )
-}

@@ -1,7 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.example.callaguy.presentation.supportMessage
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -95,17 +95,21 @@ fun SupportMessageScreen(ticketId: Int, status: SupportTicketStatus) {
             .background(Color(0xFFF7FAFC))
             .padding(horizontal = 16.dp)
     ) {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(
-                    text = "Ticket : $ticketId",
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            colors = TopAppBarDefaults.mediumTopAppBarColors(
-                containerColor = Color(0xFFF7FAFC)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(Color(0xFFF7FAFC)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Ticket $ticketId",
+                fontWeight = FontWeight.SemiBold,
+                color = Color.DarkGray,
+                fontSize = 22.sp
+
             )
-        )
+        }
         Text(
             text = "Status: Open",
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
@@ -147,22 +151,23 @@ fun SupportMessageScreen(ticketId: Int, status: SupportTicketStatus) {
                     }
                 }
             }
-
         }
-
-        MessageTextField(
-            value = messageText,
-            onValueChange = { messageText = it },
-            onSendClick = {
-                viewmodel.sendMessage(
-                    ticketId = ticketId,
-                    message = messageText
-                ) {
-                    messageText = ""
-                }
-            },
-            isSending = sendUiState == SendMessageUiState.Loading
-        )
+        if (isOpen) {
+            MessageTextField(
+                value = messageText,
+                onValueChange = { messageText = it },
+                onSendClick = {
+                    Log.d("SendClick", "Clicked send with: $messageText")
+                    viewmodel.sendMessage(
+                        ticketId = ticketId,
+                        message = messageText
+                    ) {
+                        messageText = ""
+                    }
+                },
+                isSending = sendUiState == SendMessageUiState.Loading
+            )
+        }
     }
 }
 
@@ -198,10 +203,13 @@ fun MessageTextField(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 },
-                textStyle = MaterialTheme.typography.bodyMedium,
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.DarkGray
+                ),
                 modifier = Modifier
                     .fillMaxSize(),
                 colors = TextFieldDefaults.colors(
+
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,

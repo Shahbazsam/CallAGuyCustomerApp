@@ -25,6 +25,6 @@ object CustomNavType {
         override fun put(bundle: Bundle, key: String, value: GetServiceRequestModel) {
             bundle.putString(key, Json.encodeToString(value))
         }
-
     }
 }
+

@@ -71,7 +71,6 @@ fun CreateSupportTicketRoot(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateSupportTicketScreen(
     serviceRequestId: Int,
@@ -84,17 +83,21 @@ fun CreateSupportTicketScreen(
             .background(Color(0xFFF7FAFC)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(
-                    text = stringResource(R.string.raise_a_ticket),
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            colors = TopAppBarDefaults.mediumTopAppBarColors(
-                containerColor = Color(0xFFF7FAFC)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(Color(0xFFF7FAFC)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.raise_a_ticket),
+                fontWeight = FontWeight.SemiBold,
+                color = Color.DarkGray,
+                fontSize = 22.sp
+
             )
-        )
+        }
         Column(
             modifier = Modifier
                 .weight(1f)

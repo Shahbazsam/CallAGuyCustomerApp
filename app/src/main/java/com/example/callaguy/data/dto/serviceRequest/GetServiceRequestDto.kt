@@ -15,6 +15,7 @@ data class GetServiceRequestDto(
     @Contextual
     val amount: BigDecimal,
     val subService: String,
+    val image : String?,
     val subServiceId: Int,
     val status: ServiceRequestStatus,
     @Contextual

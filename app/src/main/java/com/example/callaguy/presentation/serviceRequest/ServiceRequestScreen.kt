@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.example.callaguy.R
 import com.example.callaguy.presentation.auth.MyTextField
 import com.example.callaguy.presentation.loadingScreens.ErrorScreen
@@ -77,7 +78,7 @@ fun ServiceRequestScreen(
     onGoToOrders: () -> Unit,
     subServiceId: Int,
     subServiceName: String,
-    @DrawableRes subServiceImage: Int,
+    subServiceImage: String,
 ) {
     val viewmodel: ServiceRequestViewModel = hiltViewModel()
     val formState = viewmodel.requestFormState
@@ -333,7 +334,7 @@ fun DateTimePickerSection(
 @Composable
 fun ServiceInfo(
     subServiceName: String,
-    @DrawableRes subServiceImage: Int,
+    subServiceImage: String,
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Surface(
@@ -344,12 +345,12 @@ fun ServiceInfo(
                 .padding(2.dp)
                 .wrapContentSize()
         ) {
-            Image(
+            AsyncImage(
                 modifier = Modifier
                     .padding(12.dp)
                     .clip(RoundedCornerShape(28.dp))
                     .size(width = 24.dp, height = 24.dp),
-                painter = painterResource(subServiceImage),
+                model = subServiceImage,
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
