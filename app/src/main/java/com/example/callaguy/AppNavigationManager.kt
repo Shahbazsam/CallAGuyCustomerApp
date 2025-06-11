@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,6 +13,7 @@ import androidx.navigation.toRoute
 import com.example.callaguy.data.dto.supportTicket.SupportTicketStatus
 import com.example.callaguy.domain.model.GetServiceRequestModel
 import com.example.callaguy.presentation.Service.ServiceScreen
+import com.example.callaguy.presentation.Service.ServiceScreenRoot
 import com.example.callaguy.presentation.auth.RegistrationScreen
 import com.example.callaguy.presentation.getServiceRequests.GetDetailedScreen
 import com.example.callaguy.presentation.getServiceRequests.GetOrderRoot
@@ -84,7 +84,7 @@ fun AppNavigationManager(
             )
         }
         composable<Destinations.ServiceScreenRoute> {
-            ServiceScreen(
+            ServiceScreenRoot(
                 onCardClick = { id, name ->
                     navController.navigate(
                         Destinations.SubServiceScreenRoute(id, name)

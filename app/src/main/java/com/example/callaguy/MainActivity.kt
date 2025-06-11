@@ -44,7 +44,9 @@ class MainActivity : ComponentActivity() {
                 ){ innerPadding ->
                     AppNavigationManager(
                         navController = navController,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
                     )
                 }
 
