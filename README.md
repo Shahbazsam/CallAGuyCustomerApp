@@ -69,7 +69,11 @@ API Service (Retrofit) / Local Database (Room)
 
 ## 📽 Demo
 
-*video_2025-07-04_00-46-23*
+*
+
+https://github.com/user-attachments/assets/2a37648f-87e3-4176-8ab3-6bc629047ccb
+
+*
 
 ---
 
