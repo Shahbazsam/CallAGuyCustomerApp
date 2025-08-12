@@ -69,7 +69,7 @@ API Service (Retrofit) / Local Database (Room)
 
 ## 📽 Demo
 
-**
+*video_2025-07-04_00-46-23*
 
 ---
 
